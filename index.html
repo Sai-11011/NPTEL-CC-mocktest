@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Computing - Ultimate 150-Question Master Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover:not(:disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #eff6ff; }
+        .selected { border-color: #2563eb !important; background-color: #dbeafe !important; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="max-w-4xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
+        <!-- Content injected by JS -->
+    </div>
+
+    <script>
+        // The Complete 150 Question Bank
+        const rawQuestions = [
+            // --- WEEK 1-4 & SYLLABUS SET ---
+            { q: "Which one of the following statements least aligns with the NIST defined essential characteristics of cloud computing?", options: ["On-demand self-service", "Rapid elasticity", "Guaranteed zero downtime for all services", "Measured service"], correct: 2, exp: "NIST defines 5 characteristics: On-demand self-service, broad network access, resource pooling, rapid elasticity, and measured service. Guaranteed zero downtime is impossible and not a characteristic." },
+            { q: "From the user's perspective, Google Docs is best classified as:", options: ["PaaS", "IaaS", "SaaS", "FaaS"], correct: 2, exp: "Google Docs is a fully finished software application delivered over the web, making it Software as a Service (SaaS)." },
+            { q: "Which of the following is a public cloud platform in typical commercial cloud computing?", options: ["Windows Server with Hyper-V on-premise", "Google Cloud Platform services accessible over the public Internet", "A private OpenStack cloud", "VMware vSphere used internally"], correct: 1, exp: "Public clouds are provisioned for open use by the general public over the internet (e.g., GCP, AWS)." },
+            { q: "Virtualization technology allows multiple VMs to run on a single physical system. Which statement is MOST accurate?", options: ["Each VM shares the host OS kernel.", "Multiple VMs can run different operating systems simultaneously.", "Virtualization is only possible in cloud environments.", "It prevents resource overcommitment."], correct: 1, exp: "Unlike containers, full VMs can run entirely different, isolated operating systems simultaneously on the same hardware." },
+            { q: "A distributed system is typically preferred when the task is:", options: ["Only Data-intensive", "Only Compute-intensive", "Data-intensive and Compute-intensive", "Latency-sensitive but confined to a single machine"], correct: 2, exp: "Distributed systems excel at tasks requiring heavy parallel processing (compute) across large volumes of dispersed data." },
+            { q: "The combination of SOA and Cloud Computing led to a paradigm where almost any IT capability can be delivered as a service. This is:", options: ["FTP", "SNTP", "XaaS", "FaaS"], correct: 2, exp: "XaaS stands for 'Everything as a Service' or 'Anything as a Service'." },
+            { q: "Which statements about PaaS are CORRECT? (i) Abstracts infrastructure management. (ii) Provides integrated services (DBs, messaging). (iii) Gives full root-level access to VMs. (iv) Supports rapid software deployment.", options: ["(i), (ii), and (iv) only", "(ii) and (iii) only", "(i) and (iii) only", "(i), (ii), (iii), and (iv)"], correct: 0, exp: "PaaS does NOT give you root-level VM access. That is a characteristic of IaaS." },
+            { q: "What distinguishes a Type-1 (bare-metal) hypervisor from a Type-2 hypervisor?", options: ["Type-1 runs on top of an OS.", "Type-1 typically gives lower virtualization overhead because it runs directly on hardware.", "Type-2 can run multiple OSs; Type-1 cannot.", "Type-1 is only for desktops."], correct: 1, exp: "Type-1 installs directly on the bare metal hardware, eliminating the overhead of a host operating system." },
+            { q: "Which of the following is a valid example of PaaS?", options: ["A server image you configure yourself", "A managed relational database instance with automatic backups", "A VM where you install your own OS", "A bare-metal server"], correct: 1, exp: "A managed database abstracts away the OS and hardware management, providing a platform to store data." },
+            { q: "A ________ is a distributed computer system of interconnected stand-alone computers working together as a single integrated resource, typically in close proximity.", options: ["Grid", "Cluster", "Cloud", "Node"], correct: 1, exp: "Clusters are usually closely connected (LAN) and work as a single system, unlike Grids which span organizations." },
+            { q: "Para-virtualization is best described as:", options: ["Running unmodified guest OS with CPU trapping.", "Modifying the guest OS to use hypervisor-aware interfaces.", "Emulating hardware in software.", "Running containers."], correct: 1, exp: "Para-virtualization modifies the guest OS so it knows it is virtualized, improving performance by avoiding heavy traps." },
+            { q: "Which statement about a community cloud is MOST accurate?", options: ["Owned by a single organization.", "Shared infrastructure among several organizations with similar compliance needs.", "A public cloud account.", "Most cost-effective for startups."], correct: 1, exp: "Community clouds serve a specific community of consumers from organizations that have shared concerns." },
+            { q: "When using an outsourced private cloud, what should be explicitly considered? (i) Network dependency (ii) Multi-tenancy risks (iii) Data host location regulations", options: ["Only (i)", "(i) and (ii) only", "(i) and (iii) only", "(i), (ii) and (iii)"], correct: 3, exp: "All are critical. You rely on external networks, co-residency with other clients is possible, and cross-border data laws apply." },
+            { q: "For processing massive XML files in memory-constrained environments needing explicit parsing flow control, which API is best?", options: ["DOM", "SAX", "StAX", "All are equal"], correct: 2, exp: "StAX is a pull-based, event-driven parser offering low memory footprint while retaining explicit control over the loop." },
+            { q: "A hardware-assisted hypervisor shows 40% CPU usage while VMs report 15%. What explains the 25% gap?", options: ["Binary translation fallback.", "Context switching, memory management, and I/O emulation overhead.", "Unmodified OS limits.", "Efficient overcommitment."], correct: 1, exp: "Virtualization inherently introduces overhead for managing resources, context switching, and emulating I/O operations." },
+            { q: "Which statement clarifies Hypervisor, VMM, and Cluster Manager?", options: ["All are synonymous.", "Hypervisor and VMM are synonymous; Cluster Manager manages physical machines.", "Hypervisor = Type 1; VMM = Type 2.", "Different layers in multi-tier stack."], correct: 1, exp: "Hypervisor and VMM are the same thing. A Cluster Manager sits above them to orchestrate multiple physical hosts." },
+            { q: "Speed and flexibility are disadvantages of para-virtualization.", options: ["True", "False"], correct: 1, exp: "False. The main disadvantage is having to modify the guest OS kernel. Speed is actually an ADVANTAGE of para-virtualization." },
+            { q: "Which mechanism was designed as a registry/discovery approach for web services?", options: ["SMS", "HTTP", "SMTP", "UDDI"], correct: 3, exp: "UDDI (Universal Description, Discovery, and Integration) acts as the 'yellow pages' for web services." },
+            { q: "Which problems are addressed by traditional web services? (i) Firewall pass-through (ii) Language interoperability (iii) Ultra-low-latency communication (iv) Service discovery", options: ["Only (i) and (ii)", "(i), (ii), and (iv); (iii) is NOT", "Only (ii)", "All are addressed"], correct: 1, exp: "Web services use HTTP (bypassing firewalls), XML (interoperability), and UDDI (discovery). They are NOT good for ultra-low latency due to XML parsing overhead." },
+            { q: "Service-Oriented Architecture (SOA) models relationships primarily among:", options: ["Two entities (provider, requestor)", "Two entities (provider, broker)", "Three entities (provider, requestor, registry/broker)", "Three entities (provider, requestor, hypervisor)"], correct: 2, exp: "SOA relies on the Publish (Provider), Find (Requestor to Registry), and Bind (Requestor to Provider) triangle." },
+            { q: "Which is least likely to be specified in an operational cloud SLA?", options: ["Recovery Time Objective (RTO)", "Exact encryption algorithm and key storage procedures", "Mean Time To Repair (MTTR)", "Penalty / credit calculation"], correct: 1, exp: "SLAs define operational metrics (uptime, MTTR, penalties). Specific cryptographic implementation details are usually in security policies, not the SLA metric document." },
+            { q: "Which level is typically included in a multilevel cloud SLA?", options: ["Corporate/provider-wide obligations", "Individual developer contracts", "Unrelated third-party agreements", "Hardware warranties"], correct: 0, exp: "Multilevel SLAs usually have Corporate, Customer, and Service levels." },
+            { q: "In a conflicting multilevel SLA (Corporate 95%, Customer 98%, Service 99.9%), which is the provider legally bound to honor for that service?", options: ["Corporate-level", "Customer-level", "Service-level", "Lowest applicable"], correct: 2, exp: "The most specific agreement covering the exact service parameter overrides broader agreements." },
+            { q: "Which combination of metrics is most commonly included in production cloud SLAs?", options: ["Uptime percentage and MTTR", "Developer salary and uptime", "IP range and timezone", "Code commits and bugs"], correct: 0, exp: "Availability (Uptime) and Responsiveness/Repair speed (Mean Time To Repair) are standard SLA metrics." },
+            { q: "A service guarantees 10,000 requests/hour with 99.5% success. How many failed requests per hour are acceptable?", options: ["5", "10", "50", "500"], correct: 2, exp: "100% - 99.5% = 0.5% allowed failure rate. 0.005 * 10,000 = 50 allowed failures." },
+            { q: "Which feature most clearly distinguishes parallel (analytic) databases from a single-node RDBMS?", options: ["SQL queries", "Multi-node parallel query execution with data partitioning", "ACID support", "Normalized schemas"], correct: 1, exp: "Parallel DBs use a shared-nothing architecture to partition data across many nodes for simultaneous analytic processing." },
+            { q: "For a real-time IoT pipeline (1M events/sec, sub-second latency, sliding windows), which is LEAST suitable?", options: ["Apache Kafka + Flink", "GCP Dataflow", "AWS S3 with batch processing via Spark every 5 minutes", "Azure Event Hubs"], correct: 2, exp: "Batch processing every 5 minutes completely fails the 'sub-second latency' and 'real-time' requirements." },
+            { q: "To design a scalable pipeline processing massive video files in parallel, what storage is best?", options: ["Managed RDS", "Object storage with Hadoop/Spark connector (e.g., S3)", "Single-node block volume", "In-memory cache"], correct: 1, exp: "Object storage (like S3) is infinitely scalable and designed for massive unstructured files like video." },
+            { q: "In MapReduce, if a node runs out of disk space during the reduce merge operation, what is likely missing?", options: ["Inefficient mapper", "Combiner phase didn't run to compress intermediate data locally", "Shuffle didn't deduplicate", "Network bandwidth saturated"], correct: 1, exp: "The Combiner acts as a 'mini-reducer' on the map node, drastically reducing the volume of intermediate data sent across the network." },
+            { q: "If an OpenStack compute node supports 900 vCPUs, and overcommit is 4.5:1, what is the total allocatable vCPUs?", options: ["4100", "4150", "4050", "4200"], correct: 2, exp: "900 physical capacity * 4.5 overcommit ratio = 4050 vCPUs." },
+            { q: "In Azure SQL Database, which statement about compute tiers is CORRECT?", options: ["Business Critical uses remote premium storage.", "General Purpose replicates synchronously across regions by default.", "Hyperscale allows automatic scaling of storage beyond 100TB.", "All of the above."], correct: 2, exp: "Hyperscale is specifically designed to eliminate traditional storage limits, scaling well beyond 100TB automatically." },
+            { q: "What ultimately limits the maximum number of data disks you can attach to an Azure VM?", options: ["Azure subscription type", "Operating system", "VM size and SKU", "Region availability"], correct: 2, exp: "Each specific VM Size/SKU (e.g., Standard_D2s_v3) has hardcoded limits on CPU, RAM, and maximum attachable disks." },
+            { q: "What is the MOST SECURE approach beyond SSH keys for Linux VM passwordless authentication in Azure?", options: ["SSH public key with 600 permissions", "Azure AD SSH login through Azure Bastion or VM extension", "Service Principal", "Certificate-based SSH"], correct: 1, exp: "Azure AD login ties access directly to central identity policies, eliminating the need to manually manage or rotate local SSH keys." },
+            { q: "Standard App Service supports 10 slots. What extra deployment slot capability does Premium provide?", options: ["Faster swaps", "Traffic warm-up before swap (auto-swap with warm-up)", "Slots consume no quota", "Independent scaling"], correct: 1, exp: "Premium allows the staging slot to fully warm up and handle test traffic before instantly swapping to production, preventing cold starts." },
+            { q: "To securely access secrets in Azure without exposing them in environment variables, use:", options: ["App Settings", "Service Principal", "Managed Identity + Key Vault", "Storage Access Keys"], correct: 2, exp: "Managed Identities authenticate the application automatically, allowing it to safely pull secrets directly from Azure Key Vault." },
+            { q: "Which GCP database provides strong consistency, multi-row transactions, and sub-second global latency?", options: ["Cloud Firestore", "Cloud Spanner", "Cloud Bigtable", "BigQuery"], correct: 1, exp: "Cloud Spanner is Google's globally distributed, strongly consistent relational database." },
+            { q: "In OpenStack, which service decides on which compute host a VM will run?", options: ["Neutron", "Nova Scheduler", "Nova Compute", "Keystone"], correct: 1, exp: "The Nova Scheduler evaluates available hosts against the VM's requirements and places it on the optimal physical node." },
+            { q: "Which GCP option is best for event-driven container execution without cluster management?", options: ["Compute Engine", "GKE Autopilot", "App Engine Standard", "Cloud Run"], correct: 3, exp: "Cloud Run is a fully managed, serverless platform specifically for executing stateless containers triggered by HTTP requests or events." },
+            { q: "For petabytes of time-series IoT sensor data with high write throughput and no complex joins, use:", options: ["BigQuery", "Cloud SQL", "Cloud Bigtable", "Firestore"], correct: 2, exp: "Bigtable is a wide-column NoSQL database perfect for massive, high-throughput, low-latency time-series or IoT data." },
+            { q: "Instances in a tenant network can communicate but cannot get IP addresses automatically. Cause?", options: ["Neutron L3 agent failure", "Neutron DHCP agent failure", "Nova conductor failure", "Glance corruption"], correct: 1, exp: "DHCP (Dynamic Host Configuration Protocol) is responsible for automatically assigning IP addresses. If it fails, networking works but IPs aren't assigned." },
+            { q: "In the cloud economic model, if U is the Utility Premium, P is Peak demand, and A is Average demand, when is cloud computing cheaper than owning infrastructure?", options: ["U > P/A", "U < P/A", "P * A = U", "U < A/P"], correct: 1, exp: "Cloud is cheaper when the utility premium (U) is less than the ratio of Peak to Average demand (P/A)." },
+            { q: "Which of the following is the AWS equivalent to Google Cloud Storage (GCS)?", options: ["Amazon EC2", "Amazon EBS", "Amazon S3", "Amazon RDS"], correct: 2, exp: "Amazon S3 (Simple Storage Service) is AWS's highly scalable object storage service, identical in purpose to GCS." },
+            { q: "What is the primary role of the 'Shuffle and Sort' phase in the MapReduce paradigm?", options: ["To randomly distribute data to mappers.", "To group all intermediate values associated with the same key before passing them to the reducer.", "To delete duplicate records.", "To compress the final output."], correct: 1, exp: "Shuffle and Sort ensures that all identical keys emitted by the Mappers are routed to the exact same Reducer." },
+            { q: "In an OpenStack environment, which service is responsible for providing persistent block storage (similar to a hard drive)?", options: ["Swift", "Glance", "Neutron", "Cinder"], correct: 3, exp: "Cinder is OpenStack's Block Storage service, used to attach persistent virtual hard drives to Nova instances." },
+            { q: "According to Amazon Dynamo's Quorum consistency model, what condition ensures that a read will always return the most recent write? (Where R=read nodes, W=write nodes, N=total nodes)", options: ["R + W < N", "R + W = N", "R + W > N", "R = W"], correct: 2, exp: "If R + W > N, the read and write quorums overlap, guaranteeing that at least one node in the read quorum has the latest written data." },
+            { q: "What is the default chunk size in the Google File System (GFS)?", options: ["16 MB", "32 MB", "64 MB", "128 MB"], correct: 2, exp: "GFS divides large files into fixed-size chunks of 64 MB to optimize for large streaming reads." },
+            { q: "A major architectural difference between Containers (Docker) and Virtual Machines is:", options: ["Containers require a Type-1 hypervisor.", "Containers share the host operating system's kernel.", "Containers take minutes to boot.", "Virtual machines cannot run Linux."], correct: 1, exp: "Containers achieve their lightweight speed by sharing the host OS kernel, rather than booting a full guest OS like a VM." },
+            { q: "Which XML parser reads sequentially, triggers events, uses very little memory, but does not allow modifying the document?", options: ["DOM", "SAX", "XPath", "XSLT"], correct: 1, exp: "SAX (Simple API for XML) is an event-driven, push-based parser that streams the document, making it highly memory efficient." },
+            { q: "Which NIST cloud computing characteristic refers to the provider's ability to serve multiple consumers using a multi-tenant model?", options: ["Broad network access", "Measured service", "Rapid elasticity", "Resource pooling"], correct: 3, exp: "Resource pooling allows the provider to dynamically assign and reassign physical and virtual resources to multiple tenants based on demand." },
+            { q: "In Google App Engine, what is the fully managed, NoSQL document database used to store application data?", options: ["Cloud SQL", "Cloud Spanner", "Cloud Datastore (Firestore)", "BigQuery"], correct: 2, exp: "Cloud Datastore (now integrated into Firestore) is the highly scalable NoSQL database heavily utilized by App Engine applications." },
+
+            // --- WEEK 5-8 & SYLLABUS SET ---
+            { q: "A cloud provider guarantees 99% availability. An application is scheduled to run Y hours per day for 20 days. The observed downtime is 4 hours, and the SLA is violated. What is the maximum possible value of Y?", options: ["Y < 20", "Y >= 20.2", "Y = 24", "Insufficient data"], correct: 0, exp: "Total hours = 20 * Y. Allowed downtime = 1% of total hours = 0.2Y. If actual downtime (4) is a violation, then 4 > 0.2Y, which simplifies to Y < 20." },
+            { q: "Which statement is always true in a multi-core cloud server?", options: ["Power consumption decreases as cores increase", "Power consumption increases strictly linearly with cores", "Activating more cores increases instantaneous power draw", "Energy per task always increases with more cores"], correct: 2, exp: "While processing tasks faster can save energy overall, activating additional CPU cores will always result in a higher instantaneous power draw." },
+            { q: "An enterprise transitioning from pure on-premise infrastructure to a hybrid cloud model will experience the most significant change in which economic aspect?", options: ["Operating expenditure increases relative to capital expenditure", "Total cost of ownership (TCO) always decreases", "Fixed costs do not decrease while variable costs increase", "Annual revenue decreases due to infrastructure overhead"], correct: 0, exp: "Cloud computing shifts IT economics from CapEx (buying expensive physical hardware) to OpEx (paying monthly for what you rent)." },
+            { q: "Which cloud characteristic most directly improves cost efficiency for unpredictable workloads?", options: ["High availability", "Elastic scalability", "Geographic redundancy", "Dedicated hardware"], correct: 1, exp: "Elastic scalability allows you to instantly spin up resources during spikes and destroy them when demand drops, ensuring you only pay for what you need." },
+            { q: "Which technology allows multiple operating systems to run on the same physical server?", options: ["Containerization", "Virtualization", "Load balancing", "RAID"], correct: 1, exp: "Virtualization uses a hypervisor to run multiple fully independent Guest OSs on one machine. Containerization shares a single host OS." },
+            { q: "Which factor MOST improves MapReduce performance in the cloud?", options: ["Increasing reducer count", "Increasing replication factor", "Scheduling mappers on nodes storing the data", "Using larger block size only"], correct: 2, exp: "This is known as 'Data Locality.' Moving massive datasets across a network is incredibly slow, so MapReduce sends the computation to the data instead." },
+            { q: "Increasing HDFS block size generally results in:", options: ["More parallelism", "Fewer mappers & reduced scheduling overhead", "More shuffle traffic", "Reduced fault tolerance"], correct: 1, exp: "Larger blocks mean a massive file is split into fewer total chunks. Fewer chunks mean the master node has to schedule and track fewer map tasks." },
+            { q: "In a cloud data center, an organization must choose between containerization and full virtualization for a high-density workload. Which statement best reflects the trade-off?", options: ["Containers provide stronger isolation than VMs because they use separate kernels", "VMs have lower overhead because they share the host OS kernel", "Containers achieve higher density but weaker isolation compared to VMs", "Both have identical resource overhead"], correct: 2, exp: "Containers share the host OS kernel, making them incredibly lightweight (allowing high density), but if the kernel is compromised, all containers are at risk (weaker isolation)." },
+            { q: "A provider consolidates 32 VMs from 8 servers to 5 servers (CPU utilization jumps from 50% to 75%). Which consequence is most likely?", options: ["Total power consumption decreased; SLA violation risk increased", "Total power consumption increased; SLA improved", "Total power consumption decreased; SLA unaffected", "Insufficient data to determine impact"], correct: 0, exp: "Turning off 3 servers saves massive amounts of power. However, running the remaining servers at 75% leaves less headroom for traffic spikes, risking SLA violations." },
+            { q: "Which resource management technique helps avoid hotspots in a cloud cluster?", options: ["Energy-aware scheduling", "VM migration / load balancing", "Increasing replication factor", "Using larger HDFS blocks"], correct: 1, exp: "When a physical server gets too hot or overloaded (a hotspot), live VM migration moves workloads to cooler, underutilized servers." },
+            { q: "An attacker captures a legitimate authentication token from a user session and replays that token later to perform actions as the user. This primarily compromises:", options: ["Confidentiality", "Integrity", "Availability", "Authenticity"], correct: 3, exp: "Replaying a token allows the attacker to impersonate the legitimate user, directly breaking system authenticity." },
+            { q: "A well-crafted phishing email that convinces a user to provide credentials can affect which of the following?", options: ["Confidentiality", "Availability", "Integrity", "Authenticity"], correct: 0, exp: "Tricking a user into handing over passwords leads directly to unauthorized access and disclosure of private data (Confidentiality)." },
+            { q: "Which of the following is a passive attack?", options: ["Modifying packets in transit", "Injecting forged packets", "Traffic analysis to infer communication patterns", "Denial-of-Service (DoS) attack"], correct: 2, exp: "Passive attacks (like eavesdropping or traffic analysis) only observe and record data without altering it, making them incredibly difficult to detect." },
+            { q: "An attacker floods a web app with slow HTTP POSTs to exhaust the server's connection pool. This attack is classified as:", options: ["Disruption", "Disclosure", "Usurpation", "Deception"], correct: 0, exp: "This is a Denial of Service (DoS) attack, which interrupts correct system operation, classifying it as a Disruption threat." },
+            { q: "Which activity both attempts to exploit vulnerabilities and demonstrates real-world impact (often requiring written authorization)?", options: ["Reconnaissance", "Vulnerability scanning", "Penetration testing", "Post-attack investigation"], correct: 2, exp: "While a vulnerability scan just points out potential flaws, a penetration test actively exploits them to prove how deep an attacker could get." },
+            { q: "Which mechanism most directly provides non-repudiation for an online financial transaction?", options: ["Strong password over HTTPS", "Encrypting data using a shared symmetric key", "Logging IP addresses", "Digitally signing the transaction with the sender's private key"], correct: 3, exp: "Because only the sender possesses their private key, a valid digital signature mathematically proves they sent it, preventing them from denying it (non-repudiation)." },
+            { q: "Statement I: Authorization is verifying the identity of a user. Statement II: Non-repudiation ensures a sender cannot deny sending a message. Options:", options: ["I TRUE, II FALSE", "I FALSE, II TRUE", "Both TRUE", "Both FALSE"], correct: 1, exp: "Statement I is False (Authentication verifies identity; Authorization checks permissions). Statement II is True." },
+            { q: "A start-up wants to deploy a web app. They upload code, and the provider manages the OS, middleware, and runtime. The start-up configures app settings. Which model fits?", options: ["SaaS", "IaaS", "PaaS", "DaaS"], correct: 2, exp: "Platform as a Service (PaaS) abstracts away the underlying OS and server maintenance, letting developers focus purely on code." },
+            { q: "A law requires all personal data of citizens to be stored only within that country's geographic boundaries. This relates to which security risk?", options: ["Regulatory Compliance & Audit", "Data Location", "Disaster Recovery", "Investigative Support"], correct: 1, exp: "Data Location risks address the physical jurisdiction and sovereignty laws dictating exactly where cloud servers are geographically placed." },
+            { q: "Vendor lock-in is most directly associated with which long-term viability challenge?", options: ["Difficulty in migrating data to another provider", "Unauthorized data disclosure", "Increased regulatory audits", "Privileged user misuse"], correct: 0, exp: "Vendor lock-in occurs when proprietary APIs or massive data egress fees make it financially or technically painful to leave a cloud provider." },
+            { q: "In mobile cloud gaming, users experience lag when moving between Wi-Fi and cellular. The primary challenge specific to MCC here is:", options: ["Insufficient device storage", "High dependency on wide-area network conditions for remote execution", "Overprovisioned CPU", "Removal of caches"], correct: 1, exp: "Mobile Cloud Computing (MCC) offloads heavy processing to the cloud, making it highly vulnerable to network latency and poor signal quality." },
+            { q: "Which is the primary reason for deploying a cloudlet in a stadium?", options: ["Eliminate encryption needs", "Provide low-latency compute for AR/VR close to users", "Guarantee compliance", "Replace centralized clouds"], correct: 1, exp: "A cloudlet is a micro-datacenter placed on-site. By processing data exactly where the users are, it eliminates the round-trip latency to a distant cloud." },
+            { q: "Dynamic offloading decision engines consider an energy-delay trade-off. Which parameter is least useful?", options: ["Current cellular bandwidth", "Device battery remaining", "Number of apps installed on device", "Estimated CPU time for task locally"], correct: 2, exp: "The engine calculates if the energy to transmit the data is less than the energy to compute it locally. Total installed apps are irrelevant to this math." },
+            { q: "A university deploys a small server cluster inside its cafeteria to support AR menus. Computation is offloaded to this on-site cluster. This is:", options: ["Hyperscale cloud", "A cloudlet placed close to end users", "Personal hotspot", "Satellite relay"], correct: 1, exp: "An on-premises, resource-rich cluster designed to serve local mobile devices with ultra-low latency is a Cloudlet." },
+            { q: "A mobile banking app uses MCC. What is the most critical security concern?", options: ["Screen size", "App icon resolution", "Smartphone colors", "Confidentiality of sensitive data while transmitted and processed"], correct: 3, exp: "Because MCC forces sensitive data to leave the phone and travel over public networks to cloud servers, maintaining confidentiality in transit is paramount." },
+            { q: "Which is a key advantage of Fog Computing over Cloud Computing?", options: ["Better support for real-time applications like healthcare monitoring and autonomous vehicles", "Higher centralization", "Infinite storage", "Removal of networks"], correct: 0, exp: "Fog computing brings processing to the network edge (routers, gateways), drastically cutting latency for time-critical, real-time applications." },
+            { q: "Why is 5G + Edge/Fog recommended for real-time remote healthcare?", options: ["5G guarantees zero packet loss", "Replaces local hardware", "Edge reduces decision latency while 5G offers low transport latency", "Makes data public"], correct: 2, exp: "5G provides the ultra-fast transport pipeline, while Edge nodes provide the immediate compute power needed for split-second medical responses." },
+            { q: "In geospatial workflows processing massive satellite tiles, which optimization gives the most direct improvement in parallel processing?", options: ["Increasing laptop screen resolution", "Single-threaded pipeline", "Renaming files", "Partitioning large raster tiles into spatially-indexed blocks"], correct: 3, exp: "Cloud processing thrives when massive datasets are broken down into smaller, indexed blocks that can be crunched simultaneously by hundreds of processors." },
+            { q: "When migrating to a geospatial cloud, which challenge is most fundamental from a data-processing perspective?", options: ["Extremely high computation and storage demands for massive raster/vector datasets", "Lack of public interest", "Impossibility of running GIS on cloud", "Removal of open standards"], correct: 0, exp: "Geographic Information Systems (GIS) generate Petabytes of data, requiring the massive scale and storage capacity that only the cloud can provide." },
+            { q: "A smart healthcare system needs to raise ECG alerts within milliseconds. Which architecture fits?", options: ["Batch analytics in cloud", "Cloud processing via satellite", "Fog/Edge nodes performing local pre-processing + low-latency network (5G)", "Offline storage"], correct: 2, exp: "You cannot wait for a round-trip to a centralized cloud during a heart attack. Fog/Edge handles instant, life-saving alerts locally." },
+            { q: "In Docker, which command will show all containers (both running and stopped) on the host?", options: ["docker ps", "docker ps -a", "docker container run", "docker images"], correct: 1, exp: "The 'docker ps' command lists active containers. Appending the '-a' (all) flag reveals containers that have exited or stopped." },
+            { q: "Which statement about Docker volumes is TRUE?", options: ["Stored inside container writable layer", "Automatically deleted when container stops", "Persist independently of the container lifecycle", "Attached to one container at a time"], correct: 2, exp: "Volumes are the standard way to save persistent data. If a container crashes or is deleted, the volume remains safely on the host machine." },
+            { q: "Which statement best describes the relationship between containers and virtual machines?", options: ["Container includes its own kernel", "Multiple containers can share the same OS kernel while running on a VM or host", "Containers must run bare-metal", "VMs must run inside containers"], correct: 1, exp: "Containers achieve their lightweight speed precisely because they do not boot their own kernel; they share the host's Linux kernel." },
+            { q: "What is the primary role of Kubernetes?", options: ["Build container images", "Provide low-level container runtime", "Orchestrate, schedule, scale, and manage containers across clusters", "Replace VMs entirely"], correct: 2, exp: "Kubernetes is a container orchestration platform. It monitors container health, scales them up/down, and load balances traffic." },
+            { q: "In a Green Cloud data center, which strategy most directly reduces energy consumption?", options: ["Keep servers on but underutilized", "Randomly assign VMs", "Consolidating VMs onto fewer physical servers and powering down idle machines", "Run oldest hardware first"], correct: 2, exp: "Idle servers still consume roughly 66% of their peak power. Consolidating workloads allows you to turn off empty servers, saving massive amounts of energy." },
+            { q: "Which is the biggest practical challenge when integrating WSNs directly into a Sensor-Cloud?", options: ["Sensors typically cannot support full virtualization due to limited compute/memory.", "Sensor nodes have plentiful power.", "Data is low-volume.", "Sensors natively run Kubernetes."], correct: 0, exp: "Wireless Sensor Networks consist of tiny, battery-powered devices. They cannot run hypervisors and require gateways/proxies to bridge them to the cloud." },
+            { q: "Which architecture is appropriate for ultra-low-latency IoT applications (autonomous systems) that cannot tolerate high round-trip times?", options: ["Centralized cloud only", "Edge/fog computing nodes closer to devices", "Cloud batch processing", "Disable local processing"], correct: 1, exp: "Autonomous driving requires sub-millisecond reaction times. Fog/Edge computing eliminates the physical distance data must travel." },
+            { q: "Why is it necessary to preprocess sensor data before long-term cloud storage?", options: ["To reduce rapidly growing storage and processing costs from raw high-volume data", "Sensor data is already compressed", "Eliminate cloud need", "Make sensors consume more battery"], correct: 0, exp: "IoT devices stream a constant firehose of data. Aggregating/cleaning it at the edge prevents massive cloud bandwidth and storage bills." },
+            { q: "Statement 1: Virtual sensors can be created by aggregating data from multiple physical sensors. Statement 2: Virtualization allows multiple apps to share the same physical sensors.", options: ["Stmt 1 True, 2 False", "Stmt 1 False, 2 True", "Both statements are True", "Both statements are False"], correct: 2, exp: "Virtual sensors act as software abstractions. One virtual sensor can read a thousand physical ones, or a thousand apps can read one virtual sensor." },
+            { q: "What is the primary reason latency-critical IoT applications cannot rely solely on a centralized cloud?", options: ["Cloud is too expensive", "Physical network distance introduces unacceptable round-trip latency", "Cloud doesn't support real-time", "IoT devices cannot connect to internet"], correct: 1, exp: "The speed of light and network routing hops dictate that data traveling to a distant datacenter and back simply takes too long for critical control systems." },
+            { q: "In the co-residency attack on Amazon EC2 ('Hey, You, Get Off of My Cloud'), what is the primary goal of the 'placement' phase?", options: ["To identify the target's public IP", "To intentionally place a malicious VM on the same physical server as the victim", "To DDoS the provider", "To map the network topology"], correct: 1, exp: "The attack works by brute-forcing VM creation until the attacker's VM lands on the exact same physical motherboard as the target to exploit side-channels." },
+            { q: "According to the MCC mathematical model, computation offloading saves energy for a mobile device when:", options: ["Computation (C) is large and Data transfer (D) is small", "Computation (C) is small and Data transfer (D) is large", "Mobile battery is full", "Cloud speed equals mobile speed"], correct: 0, exp: "Transmitting data over 4G/5G burns massive battery. Offloading is only worth it if you send a tiny file (small D) that requires hours of heavy math (large C) to process." },
+            { q: "What is the ideal Power Usage Effectiveness (PUE) ratio for a perfectly efficient Green Data Center?", options: ["0.0", "1.0", "1.5", "2.0"], correct: 1, exp: "PUE = Total Facility Power / IT Equipment Power. A PUE of 1.0 means 100% of the facility's power goes directly to the servers, with zero waste on cooling or lighting." },
+            { q: "Which of Gartner's 7 Cloud Security Risks highlights the difficulty of isolating audit trails when multiple customers share the same hardware?", options: ["Data Segregation", "Investigative Support", "Long-term Viability", "Privileged User Access"], correct: 1, exp: "If a crime occurs, forensics are incredibly difficult in the cloud because pulling physical hardware logs might accidentally expose the data of other innocent tenants." },
+            { q: "In a Sensor Cloud environment, what is a 'Derived Virtual Sensor'?", options: ["A physical sensor cloned exactly.", "A sensor that computes a new value from the readings of multiple underlying physical sensors.", "A sensor that outputs XML.", "A broken sensor."], correct: 1, exp: "A derived sensor creates new intelligence. For example, combining data from a thermometer, humidity sensor, and wind sensor to create a 'Fire Risk' virtual sensor." },
+            { q: "Which metric effectively distinguishes Fog Computing from traditional Cloud Computing architectures?", options: ["Geographical Distribution (Fog is distributed; Cloud is centralized)", "Number of Server Nodes (Fog has few; Cloud has many)", "Security (Fog has none)", "Mobility (Cloud supports mobility better)"], correct: 0, exp: "Cloud datacenters are massive but centralized in a few locations. Fog nodes are smaller but geographically distributed everywhere (routers, base stations, IoT gateways)." },
+            { q: "How does the COMET system for Mobile Cloud Computing differ from MAUI?", options: ["MAUI uses thread migration, COMET does not.", "COMET works on unmodified applications using thread migration, while MAUI requires programmers to manually annotate code.", "COMET only works for iOS.", "MAUI is for Fog computing."], correct: 1, exp: "MAUI requires the developer to explicitly mark functions as 'remoteable'. COMET is entirely transparent and migrates executing threads automatically." },
+            { q: "During a cloud cartography attack, attackers often use TCP SYN traceroutes to identify the last network hop before the VM, which reveals the:", options: ["Guest OS Kernel Version", "Dom0 IP Address", "AWS Account Number", "Credit Card Hash"], correct: 1, exp: "Dom0 is the privileged management hypervisor in Xen. If two VMs report the same Dom0 IP address as their last hop, they are highly likely co-resident on the same physical server." },
+            { q: "Which of the following is classified as an Active Attack in cloud security?", options: ["Traffic Analysis", "Eavesdropping", "Replay Attack", "Snooping"], correct: 2, exp: "Passive attacks just listen. Active attacks (like a Replay Attack, DoS, or Modification) actively alter the data stream or system state to cause harm." },
+            { q: "To quantify the environmental impact of a datacenter beyond just power consumption, which metric specifically measures greenhouse gas emissions?", options: ["PUE", "CUE (Carbon Usage Effectiveness)", "WUE", "MTTR"], correct: 1, exp: "CUE measures the total CO2 emissions caused by the datacenter divided by the energy consumed by the IT equipment." },
+
+            // --- WEEK 9-12 & SYLLABUS SET ---
+            { q: "Which of the following best describes the difference between cloud computing and fog computing?", options: ["Cloud processes near IoT, fog in centralized centers.", "Cloud offers distributed gateways, fog performs in cloud core.", "Cloud relies on centralized data centers, fog distributes processing closer to end devices.", "Cloud is for storage only, fog is for real-time analytics."], correct: 2, exp: "Fog computing is essentially a decentralized extension of the cloud, pushing compute power to the network edge (gateways, routers) to reduce latency." },
+            { q: "Which architectural mechanism most enables interoperability in a cloud federation?", options: ["Proprietary APIs", "Closed resource policies", "Standardized interfaces and open protocols (e.g., REST, OCCI, CIMI)", "Centralized control"], correct: 2, exp: "For different cloud providers (like AWS and Azure) to federate and share workloads seamlessly, they must agree on common, open standards and APIs." },
+            { q: "Which issue is most critical for maintaining trust among Cloud Service Providers (CSPs) in a cloud federation?", options: ["Uniform hardware", "Standardized pricing", "Federated identity management and secure SLA enforcement", "Centralized ownership"], correct: 2, exp: "If a user logs into Cloud A, Cloud B needs to trust that authentication. Federated identity and strictly enforced SLAs are the legal and technical backbone of that trust." },
+            { q: "Which scenario best justifies the need for workload migration in a hybrid cloud federation?", options: ["All workloads have identical security", "Private cloud is underutilized", "Sensitive workloads remain private, burst workloads require public capacity", "Interoperability is restricted"], correct: 2, exp: "This is classic 'Cloud Bursting.' You keep normal traffic and sensitive data on your private servers, but overflow massive traffic spikes to the public cloud." },
+            { q: "Statement 1: A federated cloud environment eliminates the need for any single CSP to maintain large-scale infrastructure. Statement 2: Cloud broker acts as an intermediary between consumers and providers.", options: ["Stmt 1 True, 2 False", "Stmt 1 False, 2 True", "Both True", "Both False"], correct: 1, exp: "Federation relies on CSPs having massive infrastructure to share; it doesn't eliminate the need for it. Brokers do act as intermediaries to negotiate terms or aggregate services." },
+            { q: "Which of the following represents a major obstacle to seamless cloud federation?", options: ["Decreased network latency", "Data encryption level", "Vendor lock-in practices by dominant CSPs", "Database consistency"], correct: 2, exp: "Dominant providers (like AWS) often use proprietary formats and charge high egress fees specifically to make federation and migration difficult, locking customers in." },
+            { q: "The process of moving a running VM from one physical host to another without disrupting the application is called:", options: ["Cold Migration", "Pre-copy Migration", "Live Migration", "Post-copy Migration"], correct: 2, exp: "Live migration transfers the memory and state of a VM while it is still running, resulting in near-zero downtime for the end-user." },
+            { q: "Which phase of live VM migration is highly dependent on the VM's memory dirtiness rate?", options: ["Initialization", "Pre-copy (iterative memory copy)", "Stop-and-copy", "Commit"], correct: 1, exp: "In pre-copy, memory pages are sent to the new host. If the VM is actively writing to memory (dirtying pages) faster than the network can send them, the iterative phase struggles to complete." },
+            { q: "Which metric is generally the most critical performance indicator for evaluating live VM migration?", options: ["Total migration time", "Downtime", "CPU overhead", "Network bandwidth consumed"], correct: 1, exp: "The primary goal of live migration is to be invisible to the user. Minimizing the 'Downtime' (the brief moment the VM is paused to switch over) is the top priority." },
+            { q: "In a 'Post-copy' VM migration strategy, when does the VM begin executing on the destination host?", options: ["After all memory pages are transferred", "Before any memory pages are transferred (fetches on demand)", "After the first iteration of pre-copy", "Only after the source host is powered off"], correct: 1, exp: "Post-copy immediately moves the CPU execution to the destination host, and then pages are fetched over the network from the source host only when the VM tries to access them." },
+            { q: "Which issue is most critical when performing live VM migration across geographically distributed data centers?", options: ["Uniform CPU clock speed", "High network latency and bandwidth variability between sites", "Availability of local storage", "Increasing VM snapshots"], correct: 1, exp: "Live migration requires rapidly transferring RAM over the network. If the network across the country is slow or fluctuates, the migration will stall or fail." },
+            { q: "Which migration technique generally consumes the highest network bandwidth?", options: ["Cold migration", "Pre-copy migration", "Post-copy migration", "Offline image transfer"], correct: 1, exp: "Because Pre-copy repeatedly sends memory pages that keep changing (dirty pages) in multiple iterations, it transfers significantly more total data than other methods." },
+            { q: "Which Docker feature ensures that a container runs in isolation from the host system?", options: ["Hypervisor", "Linux namespaces and cgroups", "Virtual machine snapshots", "Docker Swarm"], correct: 1, exp: "Namespaces provide the isolation (giving the container its own isolated view of the system), and cgroups limit the resources (CPU, RAM) the container can use." },
+            { q: "Statement 1: Docker volumes persist data even if a container is deleted. Statement 2: Data stored inside a container's writable layer remains safe after removal.", options: ["Only Stmt 1 is true", "Only Stmt 2 is true", "Both true", "Both false"], correct: 0, exp: "Volumes are stored safely on the host file system. The container's writable layer is ephemerally attached to the container; if the container is deleted, that layer is destroyed." },
+            { q: "In Docker, what is responsible for creating and managing containers on the host system?", options: ["Docker Hub", "Docker Engine", "Kubernetes", "Dockerfile"], correct: 1, exp: "The Docker Engine is the core client-server application that builds, runs, and manages your containers locally." },
+            { q: "If a VM has 64 GB memory and the migration channel supports 8 MB/sec, what is the total migration time and downtime for non-live (cold) VM migration?", options: ["1 hour, 1 hour", "2 hours, 2 hours", "2.5 hours, 2.5 hours", "3 hours, 3 hours"], correct: 2, exp: "64 GB = 65,536 MB. Time = 65,536 / 8 = 8192 seconds. 8192 / 3600 = ~2.27 hours. Because it's cold migration, the VM is off the entire time, so total time = downtime." },
+            { q: "During pre-copy live migration, the 'Stop-and-Copy' phase transfers:", options: ["The entire disk image", "The CPU state and the remaining dirty memory pages", "Only the network configurations", "The hypervisor software"], correct: 1, exp: "Once the pre-copy iterations reduce the remaining dirty pages to a very small amount, the VM is paused. This brief pause transfers the CPU state and the last few modified pages." },
+            { q: "Serverless computing (FaaS) is best suited for workloads that are:", options: ["Long-running and CPU-intensive", "Stateful and require continuous database connections", "Event-driven, intermittent, and scale unpredictably", "Legacy monolithic applications"], correct: 2, exp: "FaaS (like AWS Lambda) charges you only for the exact milliseconds your code runs. It is perfect for short, triggered events that might suddenly spike in volume." },
+            { q: "What is a major challenge of 'Cold Starts' in serverless computing?", options: ["Overheating data centers", "The delay incurred when a function is invoked after being idle, as the provider must spin up a new container", "Inability to scale down", "Cost of idle resources"], correct: 1, exp: "If a function hasn't been called recently, the cloud provider shuts down its container to save money. The next request suffers a 'cold start' delay while a new container boots." },
+            { q: "Which AWS service is an example of Function as a Service (FaaS)?", options: ["EC2", "S3", "RDS", "Lambda"], correct: 3, exp: "AWS Lambda is the industry pioneer for Serverless/FaaS, allowing you to run code without provisioning or managing any servers." },
+            { q: "Which characteristic most distinguishes Dew computing from Edge computing?", options: ["Both rely completely on internet", "Dew computing nodes can operate fully offline and later synchronize with the cloud", "Edge provides storage, dew provides computation", "Dew replaces cloud"], correct: 1, exp: "Dew computing happens strictly on-premises (on your personal devices). It is designed to maintain core functionality even if the internet goes down entirely, syncing later." },
+            { q: "Which application scenario best fits Dew computing?", options: ["Real-time global stock trading", "Remote rural education systems with unstable internet connections", "Supercomputer modeling", "Centralized banking"], correct: 1, exp: "Because Dew computing allows offline operation with later synchronization, it is perfect for environments where constant internet access is impossible or unreliable." },
+            { q: "What is the primary motivation for integrating containers in Serverless (FaaS) deployments?", options: ["To replace all VMs", "To package function code and its dependencies into a standard unit for consistent execution", "To avoid using APIs", "To increase cold start times"], correct: 1, exp: "Containers allow developers to package their exact runtime environment (libraries, specific language versions) so the function executes predictably regardless of the provider's underlying servers." },
+            { q: "Which factor most limits the suitability of FaaS for long-running scientific simulations?", options: ["Lack of GPUs", "Function execution time limits enforced by providers", "No internet access", "Inability to process streams"], correct: 1, exp: "Providers strictly limit FaaS execution duration (e.g., AWS Lambda has a hard maximum of 15 minutes). You cannot run a 4-hour simulation on a single function invocation." },
+            { q: "Why is direct file system storage unreliable for persistent data in FaaS?", options: ["Files are encrypted", "Functions run on different hosts and local storage is ephemeral", "Storage is too slow", "Providers disable disk access"], correct: 1, exp: "Because FaaS containers are stateless and spun up/destroyed dynamically across thousands of servers, any data saved locally on that container vanishes when it terminates." },
+            { q: "Which of the following describes a hard limit for AWS Lambda function execution?", options: ["Can run indefinitely", "Maximum timeout of 15 minutes", "Up to 1 hour", "No upper bound"], correct: 1, exp: "AWS Lambda enforces a strict 15-minute execution limit. If your code isn't finished, it is forcefully terminated." },
+            { q: "Amazon Redshift is a fully managed cloud data warehouse service provided by:", options: ["Google", "Microsoft", "Amazon Web Services", "Oracle"], correct: 2, exp: "Redshift is AWS's petabyte-scale data warehouse service designed for massive analytic workloads." },
+            { q: "In the context of IoT, what does the 'Dew' layer primarily consist of?", options: ["Massive cloud data centers", "Cellular base stations", "End-user on-premises devices (PCs, smartphones, smart sensors)", "Satellites"], correct: 2, exp: "The 'Dew' is at the very bottom of the hierarchy, representing the local devices sitting right on the ground with the user." },
+            { q: "A key feature of Dew computing is 'Independence'. This means:", options: ["It uses an independent network", "Dew devices can provide local services without necessarily connecting to the cloud", "It requires a dedicated ISP", "It ignores security protocols"], correct: 1, exp: "Independence is the defining trait. Your smart thermostat (Dew device) should still control your AC even if your house loses Wi-Fi connection to the cloud." },
+            { q: "What is the relationship between Cloud, Fog, Edge, and Dew computing?", options: ["They are competing replacements", "They form a hierarchical continuum from centralized heavy compute (Cloud) down to localized on-device compute (Dew)", "Dew and Fog are the same", "Edge only handles storage"], correct: 1, exp: "They work together. Cloud handles heavy analytics, Fog handles regional latency, Edge acts as the local gateway, and Dew operates directly on the physical devices." },
+            { q: "MCC helps mobile devices by: 1. Extending storage, 2. Supporting heavy analytics, 3. Removing delays completely, 4. Enabling scalable resource usage.", options: ["1, 2, and 4 only", "1 and 3 only", "2 and 3 only", "All of the above"], correct: 0, exp: "Mobile Cloud Computing (MCC) cannot 'completely remove' wireless communication delays. Physics and network routing always introduce some latency." },
+            { q: "Which type of data is primarily handled in Spatial Cloud Computing systems?", options: ["Text", "Financial transactions", "Geographic Information System (GIS) raster and vector data", "Audio"], correct: 2, exp: "Spatial Cloud Computing is explicitly designed to handle the massive processing and storage requirements of geographic and map data (GIS)." },
+            { q: "Which technology is considered a critical enabler for ultra-reliable low-latency communication (URLLC) in 5G networks?", options: ["IPv4", "Edge/Fog Computing", "Magnetic tape storage", "Dial-up modems"], correct: 1, exp: "5G provides the fast pipe, but to actually achieve ultra-low latency, the computation must happen near the user via Edge/Fog computing." },
+            { q: "What is the primary objective of Cyber-Physical Systems (CPS)?", options: ["To replace human workers", "To seamlessly integrate physical processes with computational algorithms and networking", "To create virtual reality games", "To increase hardware costs"], correct: 1, exp: "CPS is the tight integration of the physical world (sensors, motors) with the cyber world (software algorithms, networks), like a smart grid or autonomous car." },
+            { q: "In an IoHT (Internet of Health Things) architecture, where is the most appropriate place for a fast, life-saving 'Event Handler' (like an ECG alert)?", options: ["Deep in the centralized cloud", "At the Area Gateway (Fog/Edge level)", "On a printed report", "In long-term cold storage"], correct: 1, exp: "Life-critical alerts cannot wait for cloud round-trips. They must be handled immediately at the local gateway." },
+            { q: "According to the IoHT workflow, where does 'Confirmatory' analysis (long-term trending and deep analytics) occur?", options: ["On the body sensor", "At the local gateway", "In the centralized Cloud", "On the patient's smartphone"], correct: 2, exp: "While local gateways handle immediate alerts, the massive compute power of the Cloud is used to analyze months of data to find long-term trends." },
+            { q: "In V2V (Vehicle-to-Vehicle) communication, the primary objective is:", options: ["Internet access", "Exchanging safety-critical information such as speed, position, and braking", "Infotainment", "Uploading to cloud"], correct: 1, exp: "V2V is a fundamental safety technology allowing cars to talk directly to each other to prevent collisions and coordinate braking." },
+            { q: "Which technology is most commonly associated with low-latency V2X (Vehicle-to-Everything) safety messaging?", options: ["Bluetooth", "Home Wi-Fi", "DSRC / IEEE 802.11p", "NFC"], correct: 2, exp: "Dedicated Short-Range Communications (DSRC) is a specialized Wi-Fi protocol (802.11p) specifically engineered for the fast-moving, harsh environment of vehicular communication." },
+            { q: "A major benefit of real-time mobility analytics in urban transport systems is:", options: ["Eliminating traffic laws", "Dynamic traffic signal optimization based on live vehicle density", "Reducing manufacturing costs", "Preventing all accidents"], correct: 1, exp: "By analyzing live traffic data from thousands of cars and sensors, the cloud can dynamically adjust traffic light timings to smooth flow and reduce congestion." },
+            { q: "Which of the following is a key advantage of 5G eMBB (Enhanced Mobile Broadband) over 4G LTE?", options: ["Lower latency for critical control", "Extremely high data rates and capacity for bandwidth-heavy apps like AR/VR", "Support for massive IoT", "Lower frequency usage"], correct: 1, exp: "eMBB focuses purely on massive speed and bandwidth. URLLC handles the low latency, and mMTC handles massive IoT connections." },
+            { q: "What does the ACM definition of Computing encompass?", options: ["Only designing hardware", "Any goal-oriented activity requiring computers (designing, processing, intelligent systems)", "Only processing information", "Only scientific research"], correct: 1, exp: "The ACM defines computing broadly to cover the entire spectrum of designing, building, and using computers to solve problems." },
+            { q: "In a PHIL (Power Hardware in Loop) experiment for fault analysis, why are asymmetrical faults considered more detrimental than symmetrical faults?", options: ["Harder to detect", "They introduce negative sequence components causing severe complex disturbances in rotating machines", "Mitigated by grid", "Cause immediate disconnect"], correct: 1, exp: "Asymmetrical faults (like a single line to ground) unbalance the power grid, creating negative sequence currents that severely overheat and stress the rotors in generators." },
+            { q: "According to the cloud energy breakdown, what critical insight is revealed regarding data center power usage?", options: ["Most power is used by networking", "The majority of power is *not* used for computation itself", "Distribution consumes least", "Servers consume 100% idle"], correct: 1, exp: "Massive amounts of energy in a data center are wasted on cooling systems (HVAC) and power conversion losses, rather than actually powering the CPU chips." },
+            { q: "Which XML-based language acts as the 'user manual' for a web service, describing its capabilities and how to interact with it?", options: ["SOAP", "XML", "WSDL", "UDDI"], correct: 2, exp: "The Web Services Description Language (WSDL) provides the exact technical specifications (inputs, outputs, methods) needed to call a specific web service." },
+            { q: "Which scaling method is described as adding more machines (nodes) to a resource pool?", options: ["Vertical Scaling", "Diagonal Scaling", "Horizontal Scaling", "Radial Scaling"], correct: 2, exp: "Horizontal scaling (Scale-Out) adds more servers. Vertical scaling (Scale-Up) adds more CPU/RAM to an existing server." },
+            { q: "What is the primary purpose of XML (Extensible Markup Language) in cloud computing?", options: ["Visual display", "Structure and transport data for machine-to-machine communication", "Execute logic", "Manage network"], correct: 1, exp: "Unlike HTML which formats data for humans to read, XML is a strict syntax used to structure data so that two entirely different computer systems can easily parse and understand it." },
+            { q: "In Docker terminology, what is an 'Image'?", options: ["Running instance", "A blueprint or template for a container", "Virtual machine", "Network config"], correct: 1, exp: "An image is the static, read-only template (the recipe). When you 'run' an image, it becomes an active, executing container." },
+            { q: "What is the core technology that differentiates cloud computing from the traditional client-server model?", options: ["Dedicated Servers", "Virtualization", "Fixed IP Addressing", "Local Storage"], correct: 1, exp: "Virtualization allows physical servers to be sliced into many independent virtual servers, enabling the multi-tenancy and dynamic resource pooling that defines the cloud." },
+            { q: "A cloud service guarantees 99.95% availability. Over a 30-day month (24h/day), the service crashes for exactly 1 hour. Was the SLA violated?", options: ["Yes, SLA was violated.", "No, the service stayed within allowed downtime.", "Cannot be calculated.", "Yes, but no penalty applies."], correct: 0, exp: "30 days * 24h = 720 hours. Allowed downtime is 0.05% of 720 hours = 0.36 hours (about 21.6 minutes). A 1-hour crash easily violates the SLA." },
+            { q: "Which 5G service category is specifically designed to support a massive number of low-power, low-data-rate devices like smart city sensors?", options: ["eMBB", "URLLC", "mMTC", "DSRC"], correct: 2, exp: "mMTC (Massive Machine Type Communications) is engineered to connect millions of tiny IoT devices per square kilometer without overwhelming the network." }
+        ];
+
+        // Shuffle function for randomizing array elements
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let questions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let submitted = false;
+
+        const appDiv = document.getElementById('app');
+
+        function initApp() {
+            // Deep copy and completely shuffle all 150 questions
+            questions = shuffleArray(JSON.parse(JSON.stringify(rawQuestions)));
+            answers = new Array(questions.length).fill(null);
+            renderStart();
+        }
+
+        function renderStart() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-8 text-center fade-in bg-gradient-to-b from-slate-50 to-white">
+                    <div class="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-4xl mb-8 shadow-xl">
+                        <i class="fas fa-meteor"></i>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">Cloud Computing <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-500">Mastery</span></h1>
+                    <p class="text-lg text-slate-600 mb-2 font-medium">The Ultimate 150-Question Gauntlet</p>
+                    <p class="text-sm text-slate-500 mb-10 max-w-lg mx-auto leading-relaxed">
+                        This test combines every assignment question and mock exam concept into one massive, randomized quiz. This is your final preparation.
+                    </p>
+                    
+                    <button onclick="startTest()" class="px-10 py-4 bg-slate-900 hover:bg-black text-white font-bold rounded-xl shadow-2xl transition-all hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-slate-300">
+                        Begin the Exam <i class="fas fa-play ml-2 text-blue-400"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function startTest() {
+            currentIndex = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (submitted) {
+                renderResults();
+                return;
+            }
+
+            const q = questions[currentIndex];
+            const progress = ((currentIndex) / questions.length) * 100;
+
+            let html = `
+                <!-- Progress Header -->
+                <div class="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Question ${currentIndex + 1} of ${questions.length}</span>
+                    <button onclick="submitTestEarly()" class="text-sm text-red-500 hover:text-red-700 font-medium">End Early</button>
+                </div>
+                <div class="w-full bg-slate-200 h-1.5">
+                    <div class="bg-blue-600 h-1.5 transition-all duration-300 rounded-r-full" style="width: ${progress}%"></div>
+                </div>
+                
+                <!-- Question Body -->
+                <div class="p-6 md:p-8 flex-1 flex flex-col fade-in overflow-y-auto">
+                    <h2 class="text-xl md:text-2xl font-semibold text-slate-800 mb-8 leading-snug">${q.q}</h2>
+                    
+                    <div class="space-y-3 flex-1">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="selectOption(${i})" class="option-btn w-full text-left p-4 rounded-xl border-2 ${answers[currentIndex] === i ? 'selected' : 'border-slate-200 hover:border-slate-300'} focus:outline-none relative">
+                                <div class="flex items-start">
+                                    <div class="w-6 h-6 rounded-full border-2 mr-4 flex-shrink-0 flex items-center justify-center mt-0.5 ${answers[currentIndex] === i ? 'border-blue-600' : 'border-slate-300'}">
+                                        ${answers[currentIndex] === i ? '<div class="w-3 h-3 bg-blue-600 rounded-full"></div>' : ''}
+                                    </div>
+                                    <span class="text-slate-700 font-medium leading-relaxed">${opt}</span>
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Footer Nav -->
+                <div class="bg-white p-4 md:p-6 border-t border-slate-100 flex justify-between items-center">
+                    <button onclick="prev()" class="px-6 py-3 rounded-lg font-bold text-slate-500 hover:bg-slate-100 focus:outline-none transition-colors ${currentIndex === 0 ? 'invisible' : ''}">
+                        <i class="fas fa-arrow-left mr-2"></i> Prev
+                    </button>
+                    
+                    ${currentIndex === questions.length - 1 ? `
+                        <button onclick="submitTest()" class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg transition-all focus:outline-none hover:-translate-y-0.5">
+                            Submit Exam <i class="fas fa-check-double ml-2"></i>
+                        </button>
+                    ` : `
+                        <button onclick="next()" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-lg transition-all focus:outline-none hover:-translate-y-0.5">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    `}
+                </div>
+            `;
+            appDiv.innerHTML = html;
+        }
+
+        function selectOption(index) {
+            answers[currentIndex] = index;
+            // Removed localStorage logic here. Just render immediately.
+            renderQuestion(); 
+        }
+
+        function next() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function submitTestEarly() {
+            if(confirm("Are you sure you want to end the test early? All unanswered questions will be marked incorrect.")) {
+                submitFinal();
+            }
+        }
+
+        function submitTest() {
+            const unanswered = answers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if(!confirm(`You still have ${unanswered} unanswered questions. Are you sure you want to submit?`)) return;
+            }
+            submitFinal();
+        }
+
+        function submitFinal() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-12 text-center fade-in">
+                    <i class="fas fa-server fa-beat-fade text-6xl text-blue-500 mb-8"></i>
+                    <h2 class="text-3xl font-black text-slate-800 mb-2">Compiling Results...</h2>
+                    <p class="text-slate-500 font-medium">Analyzing ${questions.length} responses</p>
+                </div>
+            `;
+            setTimeout(() => {
+                submitted = true;
+                renderResults();
+            }, 1200);
+        }
+
+        function renderResults() {
+            let score = 0;
+            let resultsHtml = '';
+
+            questions.forEach((q, i) => {
+                const ans = answers[i];
+                const isCorrect = ans === q.correct;
+                const isUnanswered = ans === null;
+                
+                if (isCorrect) score++;
+
+                // Only show detailed breakdown for WRONG or SKIPPED answers to save space and focus study
+                if (!isCorrect) {
+                    resultsHtml += `
+                        <div class="mb-6 p-5 rounded-xl border border-red-200 bg-red-50/40 fade-in">
+                            <div class="flex items-start mb-3">
+                                <div class="mt-0.5 mr-3 flex-shrink-0">
+                                    <i class="fas fa-times-circle text-red-500 text-xl"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-800">Q${i+1}: ${q.q}</h3>
+                            </div>
+                            
+                            <div class="ml-8 space-y-3 text-sm">
+                                <div class="text-red-700 bg-red-100/50 p-3 rounded-lg">
+                                    <span class="font-bold block mb-1 text-xs uppercase tracking-wider text-red-900/60">Your Answer</span>
+                                    ${isUnanswered ? '<em>Skipped</em>' : q.options[ans]}
+                                </div>
+                                
+                                <div class="text-green-800 bg-green-100/50 p-3 rounded-lg border border-green-200">
+                                    <span class="font-bold block mb-1 text-xs uppercase tracking-wider text-green-900/60">Correct Answer</span>
+                                    ${q.options[q.correct]}
+                                </div>
+                                
+                                <div class="text-slate-700 mt-4 pt-3 border-t border-slate-200/60">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-lightbulb text-yellow-500 mt-1 mr-2 flex-shrink-0"></i>
+                                        <p><strong>Concept:</strong> ${q.exp}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            const percentage = Math.round((score / questions.length) * 100);
+            let message = '';
+            let colorClass = '';
+            
+            if (percentage >= 90) { message = "Exam Ready. You crushed it."; colorClass = "text-green-600"; }
+            else if (percentage >= 75) { message = "Solid. Review the concepts below and you'll pass easily."; colorClass = "text-blue-600"; }
+            else { message = "Crunch time. Focus exclusively on the concepts listed below."; colorClass = "text-yellow-600"; }
+
+            // If they got 100%, show a special message instead of an empty review list
+            if (score === questions.length) {
+                resultsHtml = `
+                    <div class="text-center p-12 bg-green-50 rounded-xl border border-green-200 mt-8">
+                        <i class="fas fa-trophy text-6xl text-green-500 mb-6"></i>
+                        <h3 class="text-2xl font-bold text-green-800 mb-2">Flawless Victory</h3>
+                        <p class="text-green-700">You didn't miss a single question out of 150. You are absolutely ready for the exam.</p>
+                    </div>
+                `;
+            }
+
+            appDiv.innerHTML = `
+                <!-- Sticky Header Result -->
+                <div class="bg-slate-900 p-8 text-center text-white sticky top-0 z-10 shadow-lg">
+                    <h2 class="text-xl font-medium text-slate-400 mb-2 uppercase tracking-widest">Final Score</h2>
+                    <div class="text-6xl font-black ${percentage >= 75 ? 'text-green-400' : 'text-yellow-400'} mb-2 drop-shadow-md">${percentage}%</div>
+                    <p class="text-lg text-slate-300 font-medium">${score} out of ${questions.length} correct</p>
+                    <p class="text-sm font-bold ${percentage >= 75 ? 'text-green-300' : 'text-yellow-300'} mt-3 bg-white/10 inline-block px-4 py-1.5 rounded-full backdrop-blur-sm">${message}</p>
+                </div>
+                
+                <div class="p-6 md:p-8 flex-1 overflow-y-auto bg-white">
+                    ${score !== questions.length ? `<h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center"><i class="fas fa-clipboard-list mr-3 text-blue-500"></i> Your Missed Concepts</h3>` : ''}
+                    <p class="text-slate-500 mb-8 font-medium">Focus your remaining study time strictly on these explanations.</p>
+                    ${resultsHtml}
+                </div>
+                
+                <div class="bg-slate-50 p-6 border-t border-slate-200 text-center">
+                    <button onclick="location.reload()" class="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xl transition-all focus:outline-none hover:-translate-y-1">
+                        Restart Entire Exam <i class="fas fa-redo ml-2"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // Boot
+        initApp();
+    </script>
+</body>
+</html>

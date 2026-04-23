@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Computing Mastery - Set 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover:not(:disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #eff6ff; }
+        .selected { border-color: #2563eb !important; background-color: #dbeafe !important; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="max-w-4xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
+        <!-- Content injected by JS -->
+    </div>
+
+    <script>
+        // 50 Questions: 40 from W5-W8 Assignments + 10 Generated based on NPTEL Syllabus/Mock Exams
+        const rawQuestions = [
+            // Week 5
+            { q: "A cloud provider guarantees 99% availability. An application is scheduled to run Y hours per day for 20 days. The observed downtime is 4 hours, and the SLA is violated. What is the maximum possible value of Y?", options: ["Y < 20", "Y >= 20.2", "Y = 24", "Insufficient data"], correct: 0, exp: "Total hours = 20 * Y. Allowed downtime = 1% of total hours = 0.2Y. If actual downtime (4) is a violation, then 4 > 0.2Y, which simplifies to Y < 20." },
+            { q: "Which statement is always true in a multi-core cloud server?", options: ["Power consumption decreases as cores increase", "Power consumption increases strictly linearly with cores", "Activating more cores increases instantaneous power draw", "Energy per task always increases with more cores"], correct: 2, exp: "While processing tasks faster can save energy overall, activating additional CPU cores will always result in a higher instantaneous power draw." },
+            { q: "An enterprise transitioning from pure on-premise infrastructure to a hybrid cloud model will experience the most significant change in which economic aspect?", options: ["Operating expenditure increases relative to capital expenditure", "Total cost of ownership (TCO) always decreases", "Fixed costs do not decrease while variable costs increase", "Annual revenue decreases due to infrastructure overhead"], correct: 0, exp: "Cloud computing shifts IT economics from CapEx (buying expensive physical hardware) to OpEx (paying monthly for what you rent)." },
+            { q: "Which cloud characteristic most directly improves cost efficiency for unpredictable workloads?", options: ["High availability", "Elastic scalability", "Geographic redundancy", "Dedicated hardware"], correct: 1, exp: "Elastic scalability allows you to instantly spin up resources during spikes and destroy them when demand drops, ensuring you only pay for what you need." },
+            { q: "Which technology allows multiple operating systems to run on the same physical server?", options: ["Containerization", "Virtualization", "Load balancing", "RAID"], correct: 1, exp: "Virtualization uses a hypervisor to run multiple fully independent Guest OSs on one machine. Containerization shares a single host OS." },
+            { q: "Which factor MOST improves MapReduce performance in the cloud?", options: ["Increasing reducer count", "Increasing replication factor", "Scheduling mappers on nodes storing the data", "Using larger block size only"], correct: 2, exp: "This is known as 'Data Locality.' Moving massive datasets across a network is incredibly slow, so MapReduce sends the computation to the data instead." },
+            { q: "Increasing HDFS block size generally results in:", options: ["More parallelism", "Fewer mappers & reduced scheduling overhead", "More shuffle traffic", "Reduced fault tolerance"], correct: 1, exp: "Larger blocks mean a massive file is split into fewer total chunks. Fewer chunks mean the master node has to schedule and track fewer map tasks." },
+            { q: "In a cloud data center, an organization must choose between containerization and full virtualization for a high-density workload. Which statement best reflects the trade-off?", options: ["Containers provide stronger isolation than VMs because they use separate kernels", "VMs have lower overhead because they share the host OS kernel", "Containers achieve higher density but weaker isolation compared to VMs", "Both have identical resource overhead"], correct: 2, exp: "Containers share the host OS kernel, making them incredibly lightweight (allowing high density), but if the kernel is compromised, all containers are at risk (weaker isolation)." },
+            { q: "A provider consolidates 32 VMs from 8 servers to 5 servers (CPU utilization jumps from 50% to 75%). Which consequence is most likely?", options: ["Total power consumption decreased; SLA violation risk increased", "Total power consumption increased; SLA improved", "Total power consumption decreased; SLA unaffected", "Insufficient data to determine impact"], correct: 0, exp: "Turning off 3 servers saves massive amounts of power. However, running the remaining servers at 75% leaves less headroom for traffic spikes, risking SLA violations." },
+            { q: "Which resource management technique helps avoid hotspots in a cloud cluster?", options: ["Energy-aware scheduling", "VM migration / load balancing", "Increasing replication factor", "Using larger HDFS blocks"], correct: 1, exp: "When a physical server gets too hot or overloaded (a hotspot), live VM migration moves workloads to cooler, underutilized servers." },
+            // Week 6
+            { q: "An attacker captures a legitimate authentication token from a user session and replays that token later to perform actions as the user. This primarily compromises:", options: ["Confidentiality", "Integrity", "Availability", "Authenticity"], correct: 3, exp: "Replaying a token allows the attacker to impersonate the legitimate user, directly breaking system authenticity." },
+            { q: "A well-crafted phishing email that convinces a user to provide credentials can affect which of the following?", options: ["Confidentiality", "Availability", "Integrity", "Authenticity"], correct: 0, exp: "Tricking a user into handing over passwords leads directly to unauthorized access and disclosure of private data (Confidentiality)." },
+            { q: "Which of the following is a passive attack?", options: ["Modifying packets in transit", "Injecting forged packets", "Traffic analysis to infer communication patterns", "Denial-of-Service (DoS) attack"], correct: 2, exp: "Passive attacks (like eavesdropping or traffic analysis) only observe and record data without altering it, making them incredibly difficult to detect." },
+            { q: "An attacker floods a web app with slow HTTP POSTs to exhaust the server's connection pool. This attack is classified as:", options: ["Disruption", "Disclosure", "Usurpation", "Deception"], correct: 0, exp: "This is a Denial of Service (DoS) attack, which interrupts correct system operation, classifying it as a Disruption threat." },
+            { q: "Which activity both attempts to exploit vulnerabilities and demonstrates real-world impact (often requiring written authorization)?", options: ["Reconnaissance", "Vulnerability scanning", "Penetration testing", "Post-attack investigation"], correct: 2, exp: "While a vulnerability scan just points out potential flaws, a penetration test actively exploits them to prove how deep an attacker could get." },
+            { q: "Which mechanism most directly provides non-repudiation for an online financial transaction?", options: ["Strong password over HTTPS", "Encrypting data using a shared symmetric key", "Logging IP addresses", "Digitally signing the transaction with the sender's private key"], correct: 3, exp: "Because only the sender possesses their private key, a valid digital signature mathematically proves they sent it, preventing them from denying it (non-repudiation)." },
+            { q: "Statement I: Authorization is verifying the identity of a user. Statement II: Non-repudiation ensures a sender cannot deny sending a message. Options:", options: ["I TRUE, II FALSE", "I FALSE, II TRUE", "Both TRUE", "Both FALSE"], correct: 1, exp: "Statement I is False (Authentication verifies identity; Authorization checks permissions). Statement II is True." },
+            { q: "A start-up wants to deploy a web app. They upload code, and the provider manages the OS, middleware, and runtime. The start-up configures app settings. Which model fits?", options: ["SaaS", "IaaS", "PaaS", "DaaS"], correct: 2, exp: "Platform as a Service (PaaS) abstracts away the underlying OS and server maintenance, letting developers focus purely on code." },
+            { q: "A law requires all personal data of citizens to be stored only within that country's geographic boundaries. This relates to which security risk?", options: ["Regulatory Compliance & Audit", "Data Location", "Disaster Recovery", "Investigative Support"], correct: 1, exp: "Data Location risks address the physical jurisdiction and sovereignty laws dictating exactly where cloud servers are geographically placed." },
+            { q: "Vendor lock-in is most directly associated with which long-term viability challenge?", options: ["Difficulty in migrating data to another provider", "Unauthorized data disclosure", "Increased regulatory audits", "Privileged user misuse"], correct: 0, exp: "Vendor lock-in occurs when proprietary APIs or massive data egress fees make it financially or technically painful to leave a cloud provider." },
+            // Week 7
+            { q: "In mobile cloud gaming, users experience lag when moving between Wi-Fi and cellular. The primary challenge specific to MCC here is:", options: ["Insufficient device storage", "High dependency on wide-area network conditions for remote execution", "Overprovisioned CPU", "Removal of caches"], correct: 1, exp: "Mobile Cloud Computing (MCC) offloads heavy processing to the cloud, making it highly vulnerable to network latency and poor signal quality." },
+            { q: "Which is the primary reason for deploying a cloudlet in a stadium?", options: ["Eliminate encryption needs", "Provide low-latency compute for AR/VR close to users", "Guarantee compliance", "Replace centralized clouds"], correct: 1, exp: "A cloudlet is a micro-datacenter placed on-site. By processing data exactly where the users are, it eliminates the round-trip latency to a distant cloud." },
+            { q: "Dynamic offloading decision engines consider an energy-delay trade-off. Which parameter is least useful?", options: ["Current cellular bandwidth", "Device battery remaining", "Number of apps installed on device", "Estimated CPU time for task locally"], correct: 2, exp: "The engine calculates if the energy to transmit the data is less than the energy to compute it locally. Total installed apps are irrelevant to this math." },
+            { q: "A university deploys a small server cluster inside its cafeteria to support AR menus. Computation is offloaded to this on-site cluster. This is:", options: ["Hyperscale cloud", "A cloudlet placed close to end users", "Personal hotspot", "Satellite relay"], correct: 1, exp: "An on-premises, resource-rich cluster designed to serve local mobile devices with ultra-low latency is a Cloudlet." },
+            { q: "A mobile banking app uses MCC. What is the most critical security concern?", options: ["Screen size", "App icon resolution", "Smartphone colors", "Confidentiality of sensitive data while transmitted and processed"], correct: 3, exp: "Because MCC forces sensitive data to leave the phone and travel over public networks to cloud servers, maintaining confidentiality in transit is paramount." },
+            { q: "Which is a key advantage of Fog Computing over Cloud Computing?", options: ["Better support for real-time applications like healthcare monitoring and autonomous vehicles", "Higher centralization", "Infinite storage", "Removal of networks"], correct: 0, exp: "Fog computing brings processing to the network edge (routers, gateways), drastically cutting latency for time-critical, real-time applications." },
+            { q: "Why is 5G + Edge/Fog recommended for real-time remote healthcare?", options: ["5G guarantees zero packet loss", "Replaces local hardware", "Edge reduces decision latency while 5G offers low transport latency", "Makes data public"], correct: 2, exp: "5G provides the ultra-fast transport pipeline, while Edge nodes provide the immediate compute power needed for split-second medical responses." },
+            { q: "In geospatial workflows processing massive satellite tiles, which optimization gives the most direct improvement in parallel processing?", options: ["Increasing laptop screen resolution", "Single-threaded pipeline", "Renaming files", "Partitioning large raster tiles into spatially-indexed blocks"], correct: 3, exp: "Cloud processing thrives when massive datasets are broken down into smaller, indexed blocks that can be crunched simultaneously by hundreds of processors." },
+            { q: "When migrating to a geospatial cloud, which challenge is most fundamental from a data-processing perspective?", options: ["Extremely high computation and storage demands for massive raster/vector datasets", "Lack of public interest", "Impossibility of running GIS on cloud", "Removal of open standards"], correct: 0, exp: "Geographic Information Systems (GIS) generate Petabytes of data, requiring the massive scale and storage capacity that only the cloud can provide." },
+            { q: "A smart healthcare system needs to raise ECG alerts within milliseconds. Which architecture fits?", options: ["Batch analytics in cloud", "Cloud processing via satellite", "Fog/Edge nodes performing local pre-processing + low-latency network (5G)", "Offline storage"], correct: 2, exp: "You cannot wait for a round-trip to a centralized cloud during a heart attack. Fog/Edge handles instant, life-saving alerts locally." },
+            // Week 8
+            { q: "In Docker, which command will show all containers (both running and stopped) on the host?", options: ["docker ps", "docker ps -a", "docker container run", "docker images"], correct: 1, exp: "The 'docker ps' command lists active containers. Appending the '-a' (all) flag reveals containers that have exited or stopped." },
+            { q: "Which statement about Docker volumes is TRUE?", options: ["Stored inside container writable layer", "Automatically deleted when container stops", "Persist independently of the container lifecycle", "Attached to one container at a time"], correct: 2, exp: "Volumes are the standard way to save persistent data. If a container crashes or is deleted, the volume remains safely on the host machine." },
+            { q: "Which statement best describes the relationship between containers and virtual machines?", options: ["Container includes its own kernel", "Multiple containers can share the same OS kernel while running on a VM or host", "Containers must run bare-metal", "VMs must run inside containers"], correct: 1, exp: "Containers achieve their lightweight speed precisely because they do not boot their own kernel; they share the host's Linux kernel." },
+            { q: "What is the primary role of Kubernetes?", options: ["Build container images", "Provide low-level container runtime", "Orchestrate, schedule, scale, and manage containers across clusters", "Replace VMs entirely"], correct: 2, exp: "Kubernetes is a container orchestration platform. It monitors container health, scales them up/down, and load balances traffic." },
+            { q: "In a Green Cloud data center, which strategy most directly reduces energy consumption?", options: ["Keep servers on but underutilized", "Randomly assign VMs", "Consolidating VMs onto fewer physical servers and powering down idle machines", "Run oldest hardware first"], correct: 2, exp: "Idle servers still consume roughly 66% of their peak power. Consolidating workloads allows you to turn off empty servers, saving massive amounts of energy." },
+            { q: "Which is the biggest practical challenge when integrating WSNs directly into a Sensor-Cloud?", options: ["Sensors typically cannot support full virtualization due to limited compute/memory.", "Sensor nodes have plentiful power.", "Data is low-volume.", "Sensors natively run Kubernetes."], correct: 0, exp: "Wireless Sensor Networks consist of tiny, battery-powered devices. They cannot run hypervisors and require gateways/proxies to bridge them to the cloud." },
+            { q: "Which architecture is appropriate for ultra-low-latency IoT applications (autonomous systems) that cannot tolerate high round-trip times?", options: ["Centralized cloud only", "Edge/fog computing nodes closer to devices", "Cloud batch processing", "Disable local processing"], correct: 1, exp: "Autonomous driving requires sub-millisecond reaction times. Fog/Edge computing eliminates the physical distance data must travel." },
+            { q: "Why is it necessary to preprocess sensor data before long-term cloud storage?", options: ["To reduce rapidly growing storage and processing costs from raw high-volume data", "Sensor data is already compressed", "Eliminate cloud need", "Make sensors consume more battery"], correct: 0, exp: "IoT devices stream a constant firehose of data. Aggregating/cleaning it at the edge prevents massive cloud bandwidth and storage bills." },
+            { q: "Statement 1: Virtual sensors can be created by aggregating data from multiple physical sensors. Statement 2: Virtualization allows multiple apps to share the same physical sensors.", options: ["Stmt 1 True, 2 False", "Stmt 1 False, 2 True", "Both statements are True", "Both statements are False"], correct: 2, exp: "Virtual sensors act as software abstractions. One virtual sensor can read a thousand physical ones, or a thousand apps can read one virtual sensor." },
+            { q: "What is the primary reason latency-critical IoT applications cannot rely solely on a centralized cloud?", options: ["Cloud is too expensive", "Physical network distance introduces unacceptable round-trip latency", "Cloud doesn't support real-time", "IoT devices cannot connect to internet"], correct: 1, exp: "The speed of light and network routing hops dictate that data traveling to a distant datacenter and back simply takes too long for critical control systems." },
+            // Mix & Syllabus (Mock Exams)
+            { q: "In the co-residency attack on Amazon EC2 ('Hey, You, Get Off of My Cloud'), what is the primary goal of the 'placement' phase?", options: ["To identify the target's public IP", "To intentionally place a malicious VM on the same physical server as the victim", "To DDoS the provider", "To map the network topology"], correct: 1, exp: "The attack works by brute-forcing VM creation until the attacker's VM lands on the exact same physical motherboard as the target to exploit side-channels." },
+            { q: "According to the MCC mathematical model, computation offloading saves energy for a mobile device when:", options: ["Computation (C) is large and Data transfer (D) is small", "Computation (C) is small and Data transfer (D) is large", "Mobile battery is full", "Cloud speed equals mobile speed"], correct: 0, exp: "Transmitting data over 4G/5G burns massive battery. Offloading is only worth it if you send a tiny file (small D) that requires hours of heavy math (large C) to process." },
+            { q: "What is the ideal Power Usage Effectiveness (PUE) ratio for a perfectly efficient Green Data Center?", options: ["0.0", "1.0", "1.5", "2.0"], correct: 1, exp: "PUE = Total Facility Power / IT Equipment Power. A PUE of 1.0 means 100% of the facility's power goes directly to the servers, with zero waste on cooling or lighting." },
+            { q: "Which of Gartner's 7 Cloud Security Risks highlights the difficulty of isolating audit trails when multiple customers share the same hardware?", options: ["Data Segregation", "Investigative Support", "Long-term Viability", "Privileged User Access"], correct: 1, exp: "If a crime occurs, forensics are incredibly difficult in the cloud because pulling physical hardware logs might accidentally expose the data of other innocent tenants." },
+            { q: "In a Sensor Cloud environment, what is a 'Derived Virtual Sensor'?", options: ["A physical sensor cloned exactly.", "A sensor that computes a new value from the readings of multiple underlying physical sensors.", "A sensor that outputs XML.", "A broken sensor."], correct: 1, exp: "A derived sensor creates new intelligence. For example, combining data from a thermometer, humidity sensor, and wind sensor to create a 'Fire Risk' virtual sensor." },
+            { q: "Which metric effectively distinguishes Fog Computing from traditional Cloud Computing architectures?", options: ["Geographical Distribution (Fog is distributed; Cloud is centralized)", "Number of Server Nodes (Fog has few; Cloud has many)", "Security (Fog has none)", "Mobility (Cloud supports mobility better)"], correct: 0, exp: "Cloud datacenters are massive but centralized in a few locations. Fog nodes are smaller but geographically distributed everywhere (routers, base stations, IoT gateways)." },
+            { q: "How does the COMET system for Mobile Cloud Computing differ from MAUI?", options: ["MAUI uses thread migration, COMET does not.", "COMET works on unmodified applications using thread migration, while MAUI requires programmers to manually annotate code.", "COMET only works for iOS.", "MAUI is for Fog computing."], correct: 1, exp: "MAUI requires the developer to explicitly mark functions as 'remoteable'. COMET is entirely transparent and migrates executing threads automatically." },
+            { q: "During a cloud cartography attack, attackers often use TCP SYN traceroutes to identify the last network hop before the VM, which reveals the:", options: ["Guest OS Kernel Version", "Dom0 IP Address", "AWS Account Number", "Credit Card Hash"], correct: 1, exp: "Dom0 is the privileged management hypervisor in Xen. If two VMs report the same Dom0 IP address as their last hop, they are highly likely co-resident on the same physical server." },
+            { q: "Which of the following is classified as an Active Attack in cloud security?", options: ["Traffic Analysis", "Eavesdropping", "Replay Attack", "Snooping"], correct: 2, exp: "Passive attacks just listen. Active attacks (like a Replay Attack, DoS, or Modification) actively alter the data stream or system state to cause harm." },
+            { q: "To quantify the environmental impact of a datacenter beyond just power consumption, which metric specifically measures greenhouse gas emissions?", options: ["PUE", "CUE (Carbon Usage Effectiveness)", "WUE", "MTTR"], correct: 1, exp: "CUE measures the total CO2 emissions caused by the datacenter divided by the energy consumed by the IT equipment." }
+        ];
+
+        // Shuffle function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let questions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let submitted = false;
+
+        const appDiv = document.getElementById('app');
+
+        function initApp() {
+            // Deep copy and shuffle
+            questions = shuffleArray(JSON.parse(JSON.stringify(rawQuestions)));
+            answers = new Array(questions.length).fill(null);
+            renderStart();
+        }
+
+        function renderStart() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-8 text-center fade-in bg-gradient-to-b from-blue-50 to-white">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl mb-6 shadow-lg">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold text-slate-900 mb-4">Cloud Computing Mastery</h1>
+                    <p class="text-lg text-slate-600 mb-2">Set 2: Advanced Cloud Concepts & Security</p>
+                    <p class="text-sm text-slate-500 mb-8 max-w-md">This set contains 50 randomized questions covering Weeks 5-8 assignments, plus bonus mock exam logic. Focus on Security, Fog, and Containers.</p>
+                    
+                    <button onclick="startTest()" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200">
+                        Start Assessment <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function startTest() {
+            currentIndex = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (submitted) {
+                renderResults();
+                return;
+            }
+
+            const q = questions[currentIndex];
+            const progress = ((currentIndex) / questions.length) * 100;
+
+            let html = `
+                <!-- Progress Header -->
+                <div class="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Question ${currentIndex + 1} of ${questions.length}</span>
+                    <button onclick="submitTestEarly()" class="text-sm text-red-500 hover:text-red-700 font-medium">End Test Early</button>
+                </div>
+                <div class="w-full bg-slate-200 h-1">
+                    <div class="bg-blue-600 h-1 transition-all duration-300" style="width: ${progress}%"></div>
+                </div>
+                
+                <!-- Question Body -->
+                <div class="p-6 md:p-8 flex-1 flex flex-col fade-in overflow-y-auto">
+                    <h2 class="text-xl md:text-2xl font-semibold text-slate-800 mb-8 leading-snug">${q.q}</h2>
+                    
+                    <div class="space-y-3 flex-1">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="selectOption(${i})" class="option-btn w-full text-left p-4 rounded-xl border-2 ${answers[currentIndex] === i ? 'selected' : 'border-slate-200 hover:border-slate-300'} focus:outline-none relative">
+                                <div class="flex items-start">
+                                    <div class="w-6 h-6 rounded-full border-2 mr-4 flex-shrink-0 flex items-center justify-center ${answers[currentIndex] === i ? 'border-blue-600' : 'border-slate-300'}">
+                                        ${answers[currentIndex] === i ? '<div class="w-3 h-3 bg-blue-600 rounded-full"></div>' : ''}
+                                    </div>
+                                    <span class="text-slate-700 leading-tight">${opt}</span>
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Footer Nav -->
+                <div class="bg-white p-4 md:p-6 border-t border-slate-100 flex justify-between items-center">
+                    <button onclick="prev()" class="px-6 py-2.5 rounded-lg font-medium text-slate-500 hover:bg-slate-100 focus:outline-none transition-colors ${currentIndex === 0 ? 'invisible' : ''}">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    
+                    ${currentIndex === questions.length - 1 ? `
+                        <button onclick="submitTest()" class="px-8 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-sm transition-colors focus:outline-none focus:ring-4 focus:ring-green-100">
+                            Submit Test <i class="fas fa-check ml-2"></i>
+                        </button>
+                    ` : `
+                        <button onclick="next()" class="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-colors focus:outline-none focus:ring-4 focus:ring-blue-100">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    `}
+                </div>
+            `;
+            appDiv.innerHTML = html;
+        }
+
+        function selectOption(index) {
+            answers[currentIndex] = index;
+            renderQuestion(); 
+        }
+
+        function next() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function submitTestEarly() {
+            if(confirm("Are you sure you want to end the test early? Unanswered questions will be marked incorrect.")) {
+                submitFinal();
+            }
+        }
+
+        function submitTest() {
+            const unanswered = answers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if(!confirm(`You have ${unanswered} unanswered questions. Submit anyway?`)) return;
+            }
+            submitFinal();
+        }
+
+        function submitFinal() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-12 text-center fade-in">
+                    <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-6"></i>
+                    <h2 class="text-2xl font-bold text-slate-800">Analyzing Results...</h2>
+                </div>
+            `;
+            setTimeout(() => {
+                submitted = true;
+                renderResults();
+            }, 800);
+        }
+
+        function renderResults() {
+            let score = 0;
+            let resultsHtml = '';
+
+            questions.forEach((q, i) => {
+                const ans = answers[i];
+                const isCorrect = ans === q.correct;
+                const isUnanswered = ans === null;
+                
+                if (isCorrect) score++;
+
+                resultsHtml += `
+                    <div class="mb-6 p-5 rounded-xl border ${isCorrect ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50'}">
+                        <div class="flex items-start mb-3">
+                            <div class="mt-0.5 mr-3 flex-shrink-0">
+                                ${isCorrect 
+                                    ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' 
+                                    : '<i class="fas fa-times-circle text-red-500 text-xl"></i>'}
+                            </div>
+                            <h3 class="font-semibold text-slate-800">Q${i+1}: ${q.q}</h3>
+                        </div>
+                        
+                        <div class="ml-8 space-y-2 text-sm">
+                            ${!isCorrect ? `
+                                <div class="text-red-700 mb-2">
+                                    <span class="font-semibold">Your Answer:</span> ${isUnanswered ? '<em>Skipped</em>' : q.options[ans]}
+                                </div>
+                            ` : ''}
+                            <div class="text-green-700 font-medium">
+                                <span class="font-bold">Correct Answer:</span> ${q.options[q.correct]}
+                            </div>
+                            <div class="text-slate-600 mt-2 pt-2 border-t border-slate-200/50">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-1"></i> <strong>Concept:</strong> ${q.exp}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const percentage = Math.round((score / questions.length) * 100);
+            let message = '';
+            let colorClass = '';
+            
+            if (percentage >= 90) { message = "Exceptional! You've mastered this set."; colorClass = "text-green-600"; }
+            else if (percentage >= 70) { message = "Solid work. Review the missed concepts to close the gap."; colorClass = "text-blue-600"; }
+            else { message = "Keep studying. Focus heavily on the explanations below."; colorClass = "text-yellow-600"; }
+
+            appDiv.innerHTML = `
+                <div class="bg-slate-50 border-b border-slate-200 p-6 text-center">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Assessment Complete</h2>
+                    <div class="text-5xl font-black ${colorClass} mb-3">${percentage}%</div>
+                    <p class="text-lg text-slate-600">${score} out of ${questions.length} correct</p>
+                    <p class="text-sm font-medium ${colorClass} mt-2">${message}</p>
+                </div>
+                
+                <div class="p-6 md:p-8 flex-1 overflow-y-auto fade-in bg-white">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b pb-2">Detailed Review</h3>
+                    ${resultsHtml}
+                </div>
+                
+                <div class="bg-slate-50 p-6 border-t border-slate-200 text-center">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-medium shadow-md transition-colors focus:outline-none">
+                        Retake Set 2 <i class="fas fa-redo ml-2"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // Boot
+        initApp();
+    </script>
+</body>
+</html>

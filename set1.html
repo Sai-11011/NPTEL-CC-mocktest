@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Computing Mastery - Set 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover:not(:disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #eff6ff; }
+        .selected { border-color: #2563eb !important; background-color: #dbeafe !important; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="max-w-4xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
+        <!-- Content injected by JS -->
+    </div>
+
+    <script>
+        // 50 Questions: 40 from W1-W4 Assignments + 10 Generated based on NPTEL Syllabus
+        const rawQuestions = [
+            // Week 1
+            { q: "Which one of the following statements least aligns with the NIST defined essential characteristics of cloud computing?", options: ["On-demand self-service", "Rapid elasticity", "Guaranteed zero downtime for all services", "Measured service"], correct: 2, exp: "NIST defines 5 characteristics: On-demand self-service, broad network access, resource pooling, rapid elasticity, and measured service. Guaranteed zero downtime is impossible and not a characteristic." },
+            { q: "From the user's perspective, Google Docs is best classified as:", options: ["PaaS", "IaaS", "SaaS", "FaaS"], correct: 2, exp: "Google Docs is a fully finished software application delivered over the web, making it Software as a Service (SaaS)." },
+            { q: "Which of the following is a public cloud platform in typical commercial cloud computing?", options: ["Windows Server with Hyper-V on-premise", "Google Cloud Platform services accessible over the public Internet", "A private OpenStack cloud", "VMware vSphere used internally"], correct: 1, exp: "Public clouds are provisioned for open use by the general public over the internet (e.g., GCP, AWS)." },
+            { q: "Virtualization technology allows multiple VMs to run on a single physical system. Which statement is MOST accurate?", options: ["Each VM shares the host OS kernel.", "Multiple VMs can run different operating systems simultaneously.", "Virtualization is only possible in cloud environments.", "It prevents resource overcommitment."], correct: 1, exp: "Unlike containers, full VMs can run entirely different, isolated operating systems simultaneously on the same hardware." },
+            { q: "A distributed system is typically preferred when the task is:", options: ["Only Data-intensive", "Only Compute-intensive", "Data-intensive and Compute-intensive", "Latency-sensitive but confined to a single machine"], correct: 2, exp: "Distributed systems excel at tasks requiring heavy parallel processing (compute) across large volumes of dispersed data." },
+            { q: "The combination of SOA and Cloud Computing led to a paradigm where almost any IT capability can be delivered as a service. This is:", options: ["FTP", "SNTP", "XaaS", "FaaS"], correct: 2, exp: "XaaS stands for 'Everything as a Service' or 'Anything as a Service'." },
+            { q: "Which statements about PaaS are CORRECT? (i) Abstracts infrastructure management. (ii) Provides integrated services (DBs, messaging). (iii) Gives full root-level access to VMs. (iv) Supports rapid software deployment.", options: ["(i), (ii), and (iv) only", "(ii) and (iii) only", "(i) and (iii) only", "(i), (ii), (iii), and (iv)"], correct: 0, exp: "PaaS does NOT give you root-level VM access. That is a characteristic of IaaS." },
+            { q: "What distinguishes a Type-1 (bare-metal) hypervisor from a Type-2 hypervisor?", options: ["Type-1 runs on top of an OS.", "Type-1 typically gives lower virtualization overhead because it runs directly on hardware.", "Type-2 can run multiple OSs; Type-1 cannot.", "Type-1 is only for desktops."], correct: 1, exp: "Type-1 installs directly on the bare metal hardware, eliminating the overhead of a host operating system." },
+            { q: "Which of the following is a valid example of PaaS?", options: ["A server image you configure yourself", "A managed relational database instance with automatic backups", "A VM where you install your own OS", "A bare-metal server"], correct: 1, exp: "A managed database abstracts away the OS and hardware management, providing a platform to store data." },
+            { q: "A ________ is a distributed computer system of interconnected stand-alone computers working together as a single integrated resource, typically in close proximity.", options: ["Grid", "Cluster", "Cloud", "Node"], correct: 1, exp: "Clusters are usually closely connected (LAN) and work as a single system, unlike Grids which span organizations." },
+            // Week 2
+            { q: "Para-virtualization is best described as:", options: ["Running unmodified guest OS with CPU trapping.", "Modifying the guest OS to use hypervisor-aware interfaces.", "Emulating hardware in software.", "Running containers."], correct: 1, exp: "Para-virtualization modifies the guest OS so it knows it is virtualized, improving performance by avoiding heavy traps." },
+            { q: "Which statement about a community cloud is MOST accurate?", options: ["Owned by a single organization.", "Shared infrastructure among several organizations with similar compliance needs.", "A public cloud account.", "Most cost-effective for startups."], correct: 1, exp: "Community clouds serve a specific community of consumers from organizations that have shared concerns." },
+            { q: "When using an outsourced private cloud, what should be explicitly considered? (i) Network dependency (ii) Multi-tenancy risks (iii) Data host location regulations", options: ["Only (i)", "(i) and (ii) only", "(i) and (iii) only", "(i), (ii) and (iii)"], correct: 3, exp: "All are critical. You rely on external networks, co-residency with other clients is possible, and cross-border data laws apply." },
+            { q: "For processing massive XML files in memory-constrained environments needing explicit parsing flow control, which API is best?", options: ["DOM", "SAX", "StAX", "All are equal"], correct: 2, exp: "StAX is a pull-based, event-driven parser offering low memory footprint while retaining explicit control over the loop." },
+            { q: "A hardware-assisted hypervisor shows 40% CPU usage while VMs report 15%. What explains the 25% gap?", options: ["Binary translation fallback.", "Context switching, memory management, and I/O emulation overhead.", "Unmodified OS limits.", "Efficient overcommitment."], correct: 1, exp: "Virtualization inherently introduces overhead for managing resources, context switching, and emulating I/O operations." },
+            { q: "Which statement clarifies Hypervisor, VMM, and Cluster Manager?", options: ["All are synonymous.", "Hypervisor and VMM are synonymous; Cluster Manager manages physical machines.", "Hypervisor = Type 1; VMM = Type 2.", "Different layers in multi-tier stack."], correct: 1, exp: "Hypervisor and VMM are the same thing. A Cluster Manager sits above them to orchestrate multiple physical hosts." },
+            { q: "Speed and flexibility are disadvantages of para-virtualization.", options: ["True", "False"], correct: 1, exp: "False. The main disadvantage is having to modify the guest OS kernel. Speed is actually an ADVANTAGE of para-virtualization." },
+            { q: "Which mechanism was designed as a registry/discovery approach for web services?", options: ["SMS", "HTTP", "SMTP", "UDDI"], correct: 3, exp: "UDDI (Universal Description, Discovery, and Integration) acts as the 'yellow pages' for web services." },
+            { q: "Which problems are addressed by traditional web services? (i) Firewall pass-through (ii) Language interoperability (iii) Ultra-low-latency communication (iv) Service discovery", options: ["Only (i) and (ii)", "(i), (ii), and (iv); (iii) is NOT", "Only (ii)", "All are addressed"], correct: 1, exp: "Web services use HTTP (bypassing firewalls), XML (interoperability), and UDDI (discovery). They are NOT good for ultra-low latency due to XML parsing overhead." },
+            { q: "Service-Oriented Architecture (SOA) models relationships primarily among:", options: ["Two entities (provider, requestor)", "Two entities (provider, broker)", "Three entities (provider, requestor, registry/broker)", "Three entities (provider, requestor, hypervisor)"], correct: 2, exp: "SOA relies on the Publish (Provider), Find (Requestor to Registry), and Bind (Requestor to Provider) triangle." },
+            // Week 3
+            { q: "Which is least likely to be specified in an operational cloud SLA?", options: ["Recovery Time Objective (RTO)", "Exact encryption algorithm and key storage procedures", "Mean Time To Repair (MTTR)", "Penalty / credit calculation"], correct: 1, exp: "SLAs define operational metrics (uptime, MTTR, penalties). Specific cryptographic implementation details are usually in security policies, not the SLA metric document." },
+            { q: "Which level is typically included in a multilevel cloud SLA?", options: ["Corporate/provider-wide obligations", "Individual developer contracts", "Unrelated third-party agreements", "Hardware warranties"], correct: 0, exp: "Multilevel SLAs usually have Corporate, Customer, and Service levels." },
+            { q: "In a conflicting multilevel SLA (Corporate 95%, Customer 98%, Service 99.9%), which is the provider legally bound to honor for that service?", options: ["Corporate-level", "Customer-level", "Service-level", "Lowest applicable"], correct: 2, exp: "The most specific agreement covering the exact service parameter overrides broader agreements." },
+            { q: "Which combination of metrics is most commonly included in production cloud SLAs?", options: ["Uptime percentage and MTTR", "Developer salary and uptime", "IP range and timezone", "Code commits and bugs"], correct: 0, exp: "Availability (Uptime) and Responsiveness/Repair speed (Mean Time To Repair) are standard SLA metrics." },
+            { q: "A service guarantees 10,000 requests/hour with 99.5% success. How many failed requests per hour are acceptable?", options: ["5", "10", "50", "500"], correct: 2, exp: "100% - 99.5% = 0.5% allowed failure rate. 0.005 * 10,000 = 50 allowed failures." },
+            { q: "Which feature most clearly distinguishes parallel (analytic) databases from a single-node RDBMS?", options: ["SQL queries", "Multi-node parallel query execution with data partitioning", "ACID support", "Normalized schemas"], correct: 1, exp: "Parallel DBs use a shared-nothing architecture to partition data across many nodes for simultaneous analytic processing." },
+            { q: "For a real-time IoT pipeline (1M events/sec, sub-second latency, sliding windows), which is LEAST suitable?", options: ["Apache Kafka + Flink", "GCP Dataflow", "AWS S3 with batch processing via Spark every 5 minutes", "Azure Event Hubs"], correct: 2, exp: "Batch processing every 5 minutes completely fails the 'sub-second latency' and 'real-time' requirements." },
+            { q: "To design a scalable pipeline processing massive video files in parallel, what storage is best?", options: ["Managed RDS", "Object storage with Hadoop/Spark connector (e.g., S3)", "Single-node block volume", "In-memory cache"], correct: 1, exp: "Object storage (like S3) is infinitely scalable and designed for massive unstructured files like video." },
+            { q: "In MapReduce, if a node runs out of disk space during the reduce merge operation, what is likely missing?", options: ["Inefficient mapper", "Combiner phase didn't run to compress intermediate data locally", "Shuffle didn't deduplicate", "Network bandwidth saturated"], correct: 1, exp: "The Combiner acts as a 'mini-reducer' on the map node, drastically reducing the volume of intermediate data sent across the network." },
+            { q: "If an OpenStack compute node supports 900 vCPUs, and overcommit is 4.5:1, what is the total allocatable vCPUs?", options: ["4100", "4150", "4050", "4200"], correct: 2, exp: "900 physical capacity * 4.5 overcommit ratio = 4050 vCPUs." },
+            // Week 4
+            { q: "In Azure SQL Database, which statement about compute tiers is CORRECT?", options: ["Business Critical uses remote premium storage.", "General Purpose replicates synchronously across regions by default.", "Hyperscale allows automatic scaling of storage beyond 100TB.", "All of the above."], correct: 2, exp: "Hyperscale is specifically designed to eliminate traditional storage limits, scaling well beyond 100TB automatically." },
+            { q: "What ultimately limits the maximum number of data disks you can attach to an Azure VM?", options: ["Azure subscription type", "Operating system", "VM size and SKU", "Region availability"], correct: 2, exp: "Each specific VM Size/SKU (e.g., Standard_D2s_v3) has hardcoded limits on CPU, RAM, and maximum attachable disks." },
+            { q: "What is the MOST SECURE approach beyond SSH keys for Linux VM passwordless authentication in Azure?", options: ["SSH public key with 600 permissions", "Azure AD SSH login through Azure Bastion or VM extension", "Service Principal", "Certificate-based SSH"], correct: 1, exp: "Azure AD login ties access directly to central identity policies, eliminating the need to manually manage or rotate local SSH keys." },
+            { q: "Standard App Service supports 10 slots. What extra deployment slot capability does Premium provide?", options: ["Faster swaps", "Traffic warm-up before swap (auto-swap with warm-up)", "Slots consume no quota", "Independent scaling"], correct: 1, exp: "Premium allows the staging slot to fully warm up and handle test traffic before instantly swapping to production, preventing cold starts." },
+            { q: "To securely access secrets in Azure without exposing them in environment variables, use:", options: ["App Settings", "Service Principal", "Managed Identity + Key Vault", "Storage Access Keys"], correct: 2, exp: "Managed Identities authenticate the application automatically, allowing it to safely pull secrets directly from Azure Key Vault." },
+            { q: "Which GCP database provides strong consistency, multi-row transactions, and sub-second global latency?", options: ["Cloud Firestore", "Cloud Spanner", "Cloud Bigtable", "BigQuery"], correct: 1, exp: "Cloud Spanner is Google's globally distributed, strongly consistent relational database." },
+            { q: "In OpenStack, which service decides on which compute host a VM will run?", options: ["Neutron", "Nova Scheduler", "Nova Compute", "Keystone"], correct: 1, exp: "The Nova Scheduler evaluates available hosts against the VM's requirements and places it on the optimal physical node." },
+            { q: "Which GCP option is best for event-driven container execution without cluster management?", options: ["Compute Engine", "GKE Autopilot", "App Engine Standard", "Cloud Run"], correct: 3, exp: "Cloud Run is a fully managed, serverless platform specifically for executing stateless containers triggered by HTTP requests or events." },
+            { q: "For petabytes of time-series IoT sensor data with high write throughput and no complex joins, use:", options: ["BigQuery", "Cloud SQL", "Cloud Bigtable", "Firestore"], correct: 2, exp: "Bigtable is a wide-column NoSQL database perfect for massive, high-throughput, low-latency time-series or IoT data." },
+            { q: "Instances in a tenant network can communicate but cannot get IP addresses automatically. Cause?", options: ["Neutron L3 agent failure", "Neutron DHCP agent failure", "Nova conductor failure", "Glance corruption"], correct: 1, exp: "DHCP (Dynamic Host Configuration Protocol) is responsible for automatically assigning IP addresses. If it fails, networking works but IPs aren't assigned." },
+            // Generated/Syllabus Mix
+            { q: "In the cloud economic model, if U is the Utility Premium, P is Peak demand, and A is Average demand, when is cloud computing cheaper than owning infrastructure?", options: ["U > P/A", "U < P/A", "P * A = U", "U < A/P"], correct: 1, exp: "Cloud is cheaper when the utility premium (U) is less than the ratio of Peak to Average demand (P/A)." },
+            { q: "Which of the following is the AWS equivalent to Google Cloud Storage (GCS)?", options: ["Amazon EC2", "Amazon EBS", "Amazon S3", "Amazon RDS"], correct: 2, exp: "Amazon S3 (Simple Storage Service) is AWS's highly scalable object storage service, identical in purpose to GCS." },
+            { q: "What is the primary role of the 'Shuffle and Sort' phase in the MapReduce paradigm?", options: ["To randomly distribute data to mappers.", "To group all intermediate values associated with the same key before passing them to the reducer.", "To delete duplicate records.", "To compress the final output."], correct: 1, exp: "Shuffle and Sort ensures that all identical keys emitted by the Mappers are routed to the exact same Reducer." },
+            { q: "In an OpenStack environment, which service is responsible for providing persistent block storage (similar to a hard drive)?", options: ["Swift", "Glance", "Neutron", "Cinder"], correct: 3, exp: "Cinder is OpenStack's Block Storage service, used to attach persistent virtual hard drives to Nova instances." },
+            { q: "According to Amazon Dynamo's Quorum consistency model, what condition ensures that a read will always return the most recent write? (Where R=read nodes, W=write nodes, N=total nodes)", options: ["R + W < N", "R + W = N", "R + W > N", "R = W"], correct: 2, exp: "If R + W > N, the read and write quorums overlap, guaranteeing that at least one node in the read quorum has the latest written data." },
+            { q: "What is the default chunk size in the Google File System (GFS)?", options: ["16 MB", "32 MB", "64 MB", "128 MB"], correct: 2, exp: "GFS divides large files into fixed-size chunks of 64 MB to optimize for large streaming reads." },
+            { q: "A major architectural difference between Containers (Docker) and Virtual Machines is:", options: ["Containers require a Type-1 hypervisor.", "Containers share the host operating system's kernel.", "Containers take minutes to boot.", "Virtual machines cannot run Linux."], correct: 1, exp: "Containers achieve their lightweight speed by sharing the host OS kernel, rather than booting a full guest OS like a VM." },
+            { q: "Which XML parser reads sequentially, triggers events, uses very little memory, but does not allow modifying the document?", options: ["DOM", "SAX", "XPath", "XSLT"], correct: 1, exp: "SAX (Simple API for XML) is an event-driven, push-based parser that streams the document, making it highly memory efficient." },
+            { q: "Which NIST cloud computing characteristic refers to the provider's ability to serve multiple consumers using a multi-tenant model?", options: ["Broad network access", "Measured service", "Rapid elasticity", "Resource pooling"], correct: 3, exp: "Resource pooling allows the provider to dynamically assign and reassign physical and virtual resources to multiple tenants based on demand." },
+            { q: "In Google App Engine, what is the fully managed, NoSQL document database used to store application data?", options: ["Cloud SQL", "Cloud Spanner", "Cloud Datastore (Firestore)", "BigQuery"], correct: 2, exp: "Cloud Datastore (now integrated into Firestore) is the highly scalable NoSQL database heavily utilized by App Engine applications." }
+        ];
+
+        // Shuffle function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let questions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let submitted = false;
+
+        const appDiv = document.getElementById('app');
+
+        function initApp() {
+            // Deep copy and shuffle
+            questions = shuffleArray(JSON.parse(JSON.stringify(rawQuestions)));
+            answers = new Array(questions.length).fill(null);
+            renderStart();
+        }
+
+        function renderStart() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-8 text-center fade-in bg-gradient-to-b from-blue-50 to-white">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl mb-6 shadow-lg">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold text-slate-900 mb-4">Cloud Computing Mastery</h1>
+                    <p class="text-lg text-slate-600 mb-2">Set 1: Foundations & Architecture</p>
+                    <p class="text-sm text-slate-500 mb-8 max-w-md">This set contains 50 randomized questions covering Weeks 1-4 assignments and core concepts. Perfect for identifying weak spots.</p>
+                    
+                    <button onclick="startTest()" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200">
+                        Start Assessment <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function startTest() {
+            currentIndex = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (submitted) {
+                renderResults();
+                return;
+            }
+
+            const q = questions[currentIndex];
+            const progress = ((currentIndex) / questions.length) * 100;
+
+            let html = `
+                <!-- Progress Header -->
+                <div class="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Question ${currentIndex + 1} of ${questions.length}</span>
+                    <button onclick="submitTestEarly()" class="text-sm text-red-500 hover:text-red-700 font-medium">End Test Early</button>
+                </div>
+                <div class="w-full bg-slate-200 h-1">
+                    <div class="bg-blue-600 h-1 transition-all duration-300" style="width: ${progress}%"></div>
+                </div>
+                
+                <!-- Question Body -->
+                <div class="p-6 md:p-8 flex-1 flex flex-col fade-in overflow-y-auto">
+                    <h2 class="text-xl md:text-2xl font-semibold text-slate-800 mb-8 leading-snug">${q.q}</h2>
+                    
+                    <div class="space-y-3 flex-1">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="selectOption(${i})" class="option-btn w-full text-left p-4 rounded-xl border-2 ${answers[currentIndex] === i ? 'selected' : 'border-slate-200 hover:border-slate-300'} focus:outline-none relative">
+                                <div class="flex items-start">
+                                    <div class="w-6 h-6 rounded-full border-2 mr-4 flex-shrink-0 flex items-center justify-center ${answers[currentIndex] === i ? 'border-blue-600' : 'border-slate-300'}">
+                                        ${answers[currentIndex] === i ? '<div class="w-3 h-3 bg-blue-600 rounded-full"></div>' : ''}
+                                    </div>
+                                    <span class="text-slate-700 leading-tight">${opt}</span>
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Footer Nav -->
+                <div class="bg-white p-4 md:p-6 border-t border-slate-100 flex justify-between items-center">
+                    <button onclick="prev()" class="px-6 py-2.5 rounded-lg font-medium text-slate-500 hover:bg-slate-100 focus:outline-none transition-colors ${currentIndex === 0 ? 'invisible' : ''}">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    
+                    ${currentIndex === questions.length - 1 ? `
+                        <button onclick="submitTest()" class="px-8 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-sm transition-colors focus:outline-none focus:ring-4 focus:ring-green-100">
+                            Submit Test <i class="fas fa-check ml-2"></i>
+                        </button>
+                    ` : `
+                        <button onclick="next()" class="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-colors focus:outline-none focus:ring-4 focus:ring-blue-100">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    `}
+                </div>
+            `;
+            appDiv.innerHTML = html;
+        }
+
+        function selectOption(index) {
+            answers[currentIndex] = index;
+            renderQuestion(); 
+        }
+
+        function next() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function submitTestEarly() {
+            if(confirm("Are you sure you want to end the test early? Unanswered questions will be marked incorrect.")) {
+                submitFinal();
+            }
+        }
+
+        function submitTest() {
+            const unanswered = answers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if(!confirm(`You have ${unanswered} unanswered questions. Submit anyway?`)) return;
+            }
+            submitFinal();
+        }
+
+        function submitFinal() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-12 text-center fade-in">
+                    <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-6"></i>
+                    <h2 class="text-2xl font-bold text-slate-800">Analyzing Results...</h2>
+                </div>
+            `;
+            setTimeout(() => {
+                submitted = true;
+                renderResults();
+            }, 800);
+        }
+
+        function renderResults() {
+            let score = 0;
+            let resultsHtml = '';
+
+            questions.forEach((q, i) => {
+                const ans = answers[i];
+                const isCorrect = ans === q.correct;
+                const isUnanswered = ans === null;
+                
+                if (isCorrect) score++;
+
+                resultsHtml += `
+                    <div class="mb-6 p-5 rounded-xl border ${isCorrect ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50'}">
+                        <div class="flex items-start mb-3">
+                            <div class="mt-0.5 mr-3 flex-shrink-0">
+                                ${isCorrect 
+                                    ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' 
+                                    : '<i class="fas fa-times-circle text-red-500 text-xl"></i>'}
+                            </div>
+                            <h3 class="font-semibold text-slate-800">Q${i+1}: ${q.q}</h3>
+                        </div>
+                        
+                        <div class="ml-8 space-y-2 text-sm">
+                            ${!isCorrect ? `
+                                <div class="text-red-700 mb-2">
+                                    <span class="font-semibold">Your Answer:</span> ${isUnanswered ? '<em>Skipped</em>' : q.options[ans]}
+                                </div>
+                            ` : ''}
+                            <div class="text-green-700 font-medium">
+                                <span class="font-bold">Correct Answer:</span> ${q.options[q.correct]}
+                            </div>
+                            <div class="text-slate-600 mt-2 pt-2 border-t border-slate-200/50">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-1"></i> <strong>Concept:</strong> ${q.exp}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const percentage = Math.round((score / questions.length) * 100);
+            let message = '';
+            let colorClass = '';
+            
+            if (percentage >= 90) { message = "Exceptional! You've mastered this set."; colorClass = "text-green-600"; }
+            else if (percentage >= 70) { message = "Solid work. Review the missed concepts to close the gap."; colorClass = "text-blue-600"; }
+            else { message = "Keep studying. Focus heavily on the explanations below."; colorClass = "text-yellow-600"; }
+
+            appDiv.innerHTML = `
+                <div class="bg-slate-50 border-b border-slate-200 p-6 text-center">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Assessment Complete</h2>
+                    <div class="text-5xl font-black ${colorClass} mb-3">${percentage}%</div>
+                    <p class="text-lg text-slate-600">${score} out of ${questions.length} correct</p>
+                    <p class="text-sm font-medium ${colorClass} mt-2">${message}</p>
+                </div>
+                
+                <div class="p-6 md:p-8 flex-1 overflow-y-auto fade-in bg-white">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b pb-2">Detailed Review</h3>
+                    ${resultsHtml}
+                </div>
+                
+                <div class="bg-slate-50 p-6 border-t border-slate-200 text-center">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-medium shadow-md transition-colors focus:outline-none">
+                        Retake Set 1 <i class="fas fa-redo ml-2"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // Boot
+        initApp();
+    </script>
+</body>
+</html>

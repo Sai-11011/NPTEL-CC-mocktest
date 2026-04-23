@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Computing Mastery - Set 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover:not(:disabled) { transform: translateX(5px); border-color: #3b82f6; background-color: #eff6ff; }
+        .selected { border-color: #2563eb !important; background-color: #dbeafe !important; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="max-w-4xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
+        <!-- Content injected by JS -->
+    </div>
+
+    <script>
+        // 50 Questions: 40 from W9-W12 Assignments + 10 Generated based on NPTEL Syllabus/Mock Exams
+        const rawQuestions = [
+            // Week 9
+            { q: "Which of the following best describes the difference between cloud computing and fog computing?", options: ["Cloud processes near IoT, fog in centralized centers.", "Cloud offers distributed gateways, fog performs in cloud core.", "Cloud relies on centralized data centers, fog distributes processing closer to end devices.", "Cloud is for storage only, fog is for real-time analytics."], correct: 2, exp: "Fog computing is essentially a decentralized extension of the cloud, pushing compute power to the network edge (gateways, routers) to reduce latency." },
+            { q: "Which architectural mechanism most enables interoperability in a cloud federation?", options: ["Proprietary APIs", "Closed resource policies", "Standardized interfaces and open protocols (e.g., REST, OCCI, CIMI)", "Centralized control"], correct: 2, exp: "For different cloud providers (like AWS and Azure) to federate and share workloads seamlessly, they must agree on common, open standards and APIs." },
+            { q: "Which issue is most critical for maintaining trust among Cloud Service Providers (CSPs) in a cloud federation?", options: ["Uniform hardware", "Standardized pricing", "Federated identity management and secure SLA enforcement", "Centralized ownership"], correct: 2, exp: "If a user logs into Cloud A, Cloud B needs to trust that authentication. Federated identity and strictly enforced SLAs are the legal and technical backbone of that trust." },
+            { q: "Which scenario best justifies the need for workload migration in a hybrid cloud federation?", options: ["All workloads have identical security", "Private cloud is underutilized", "Sensitive workloads remain private, burst workloads require public capacity", "Interoperability is restricted"], correct: 2, exp: "This is classic 'Cloud Bursting.' You keep normal traffic and sensitive data on your private servers, but overflow massive traffic spikes to the public cloud." },
+            { q: "Statement 1: A federated cloud environment eliminates the need for any single CSP to maintain large-scale infrastructure. Statement 2: Cloud broker acts as an intermediary between consumers and providers.", options: ["Stmt 1 True, 2 False", "Stmt 1 False, 2 True", "Both True", "Both False"], correct: 1, exp: "Federation relies on CSPs having massive infrastructure to share; it doesn't eliminate the need for it. Brokers do act as intermediaries to negotiate terms or aggregate services." },
+            { q: "Which of the following represents a major obstacle to seamless cloud federation?", options: ["Decreased network latency", "Data encryption level", "Vendor lock-in practices by dominant CSPs", "Database consistency"], correct: 2, exp: "Dominant providers (like AWS) often use proprietary formats and charge high egress fees specifically to make federation and migration difficult, locking customers in." },
+            { q: "The process of moving a running VM from one physical host to another without disrupting the application is called:", options: ["Cold Migration", "Pre-copy Migration", "Live Migration", "Post-copy Migration"], correct: 2, exp: "Live migration transfers the memory and state of a VM while it is still running, resulting in near-zero downtime for the end-user." },
+            { q: "Which phase of live VM migration is highly dependent on the VM's memory dirtiness rate?", options: ["Initialization", "Pre-copy (iterative memory copy)", "Stop-and-copy", "Commit"], correct: 1, exp: "In pre-copy, memory pages are sent to the new host. If the VM is actively writing to memory (dirtying pages) faster than the network can send them, the iterative phase struggles to complete." },
+            { q: "Which metric is generally the most critical performance indicator for evaluating live VM migration?", options: ["Total migration time", "Downtime", "CPU overhead", "Network bandwidth consumed"], correct: 1, exp: "The primary goal of live migration is to be invisible to the user. Minimizing the 'Downtime' (the brief moment the VM is paused to switch over) is the top priority." },
+            { q: "In a 'Post-copy' VM migration strategy, when does the VM begin executing on the destination host?", options: ["After all memory pages are transferred", "Before any memory pages are transferred (fetches on demand)", "After the first iteration of pre-copy", "Only after the source host is powered off"], correct: 1, exp: "Post-copy immediately moves the CPU execution to the destination host, and then pages are fetched over the network from the source host only when the VM tries to access them." },
+            // Week 10
+            { q: "Which issue is most critical when performing live VM migration across geographically distributed data centers?", options: ["Uniform CPU clock speed", "High network latency and bandwidth variability between sites", "Availability of local storage", "Increasing VM snapshots"], correct: 1, exp: "Live migration requires rapidly transferring RAM over the network. If the network across the country is slow or fluctuates, the migration will stall or fail." },
+            { q: "Which migration technique generally consumes the highest network bandwidth?", options: ["Cold migration", "Pre-copy migration", "Post-copy migration", "Offline image transfer"], correct: 1, exp: "Because Pre-copy repeatedly sends memory pages that keep changing (dirty pages) in multiple iterations, it transfers significantly more total data than other methods." },
+            { q: "Which Docker feature ensures that a container runs in isolation from the host system?", options: ["Hypervisor", "Linux namespaces and cgroups", "Virtual machine snapshots", "Docker Swarm"], correct: 1, exp: "Namespaces provide the isolation (giving the container its own isolated view of the system), and cgroups limit the resources (CPU, RAM) the container can use." },
+            { q: "Statement 1: Docker volumes persist data even if a container is deleted. Statement 2: Data stored inside a container's writable layer remains safe after removal.", options: ["Only Stmt 1 is true", "Only Stmt 2 is true", "Both true", "Both false"], correct: 0, exp: "Volumes are stored safely on the host file system. The container's writable layer is ephemerally attached to the container; if the container is deleted, that layer is destroyed." },
+            { q: "In Docker, what is responsible for creating and managing containers on the host system?", options: ["Docker Hub", "Docker Engine", "Kubernetes", "Dockerfile"], correct: 1, exp: "The Docker Engine is the core client-server application that builds, runs, and manages your containers locally." },
+            { q: "If a VM has 64 GB memory and the migration channel supports 8 MB/sec, what is the total migration time and downtime for non-live (cold) VM migration?", options: ["1 hour, 1 hour", "2 hours, 2 hours", "2.5 hours, 2.5 hours", "3 hours, 3 hours"], correct: 2, exp: "64 GB = 65,536 MB. Time = 65,536 / 8 = 8192 seconds. 8192 / 3600 = ~2.27 hours. Because it's cold migration, the VM is off the entire time, so total time = downtime." },
+            { q: "During pre-copy live migration, the 'Stop-and-Copy' phase transfers:", options: ["The entire disk image", "The CPU state and the remaining dirty memory pages", "Only the network configurations", "The hypervisor software"], correct: 1, exp: "Once the pre-copy iterations reduce the remaining dirty pages to a very small amount, the VM is paused. This brief pause transfers the CPU state and the last few modified pages." },
+            { q: "Serverless computing (FaaS) is best suited for workloads that are:", options: ["Long-running and CPU-intensive", "Stateful and require continuous database connections", "Event-driven, intermittent, and scale unpredictably", "Legacy monolithic applications"], correct: 2, exp: "FaaS (like AWS Lambda) charges you only for the exact milliseconds your code runs. It is perfect for short, triggered events that might suddenly spike in volume." },
+            { q: "What is a major challenge of 'Cold Starts' in serverless computing?", options: ["Overheating data centers", "The delay incurred when a function is invoked after being idle, as the provider must spin up a new container", "Inability to scale down", "Cost of idle resources"], correct: 1, exp: "If a function hasn't been called recently, the cloud provider shuts down its container to save money. The next request suffers a 'cold start' delay while a new container boots." },
+            { q: "Which AWS service is an example of Function as a Service (FaaS)?", options: ["EC2", "S3", "RDS", "Lambda"], correct: 3, exp: "AWS Lambda is the industry pioneer for Serverless/FaaS, allowing you to run code without provisioning or managing any servers." },
+            // Week 11
+            { q: "Which characteristic most distinguishes Dew computing from Edge computing?", options: ["Both rely completely on internet", "Dew computing nodes can operate fully offline and later synchronize with the cloud", "Edge provides storage, dew provides computation", "Dew replaces cloud"], correct: 1, exp: "Dew computing happens strictly on-premises (on your personal devices). It is designed to maintain core functionality even if the internet goes down entirely, syncing later." },
+            { q: "Which application scenario best fits Dew computing?", options: ["Real-time global stock trading", "Remote rural education systems with unstable internet connections", "Supercomputer modeling", "Centralized banking"], correct: 1, exp: "Because Dew computing allows offline operation with later synchronization, it is perfect for environments where constant internet access is impossible or unreliable." },
+            { q: "What is the primary motivation for integrating containers in Serverless (FaaS) deployments?", options: ["To replace all VMs", "To package function code and its dependencies into a standard unit for consistent execution", "To avoid using APIs", "To increase cold start times"], correct: 1, exp: "Containers allow developers to package their exact runtime environment (libraries, specific language versions) so the function executes predictably regardless of the provider's underlying servers." },
+            { q: "Which factor most limits the suitability of FaaS for long-running scientific simulations?", options: ["Lack of GPUs", "Function execution time limits enforced by providers", "No internet access", "Inability to process streams"], correct: 1, exp: "Providers strictly limit FaaS execution duration (e.g., AWS Lambda has a hard maximum of 15 minutes). You cannot run a 4-hour simulation on a single function invocation." },
+            { q: "Why is direct file system storage unreliable for persistent data in FaaS?", options: ["Files are encrypted", "Functions run on different hosts and local storage is ephemeral", "Storage is too slow", "Providers disable disk access"], correct: 1, exp: "Because FaaS containers are stateless and spun up/destroyed dynamically across thousands of servers, any data saved locally on that container vanishes when it terminates." },
+            { q: "Which of the following describes a hard limit for AWS Lambda function execution?", options: ["Can run indefinitely", "Maximum timeout of 15 minutes", "Up to 1 hour", "No upper bound"], correct: 1, exp: "AWS Lambda enforces a strict 15-minute execution limit. If your code isn't finished, it is forcefully terminated." },
+            { q: "Amazon Redshift is a fully managed cloud data warehouse service provided by:", options: ["Google", "Microsoft", "Amazon Web Services", "Oracle"], correct: 2, exp: "Redshift is AWS's petabyte-scale data warehouse service designed for massive analytic workloads." },
+            { q: "In the context of IoT, what does the 'Dew' layer primarily consist of?", options: ["Massive cloud data centers", "Cellular base stations", "End-user on-premises devices (PCs, smartphones, smart sensors)", "Satellites"], correct: 2, exp: "The 'Dew' is at the very bottom of the hierarchy, representing the local devices sitting right on the ground with the user." },
+            { q: "A key feature of Dew computing is 'Independence'. This means:", options: ["It uses an independent network", "Dew devices can provide local services without necessarily connecting to the cloud", "It requires a dedicated ISP", "It ignores security protocols"], correct: 1, exp: "Independence is the defining trait. Your smart thermostat (Dew device) should still control your AC even if your house loses Wi-Fi connection to the cloud." },
+            { q: "What is the relationship between Cloud, Fog, Edge, and Dew computing?", options: ["They are competing replacements", "They form a hierarchical continuum from centralized heavy compute (Cloud) down to localized on-device compute (Dew)", "Dew and Fog are the same", "Edge only handles storage"], correct: 1, exp: "They work together. Cloud handles heavy analytics, Fog handles regional latency, Edge acts as the local gateway, and Dew operates directly on the physical devices." },
+            // Week 12
+            { q: "MCC helps mobile devices by: 1. Extending storage, 2. Supporting heavy analytics, 3. Removing delays completely, 4. Enabling scalable resource usage.", options: ["1, 2, and 4 only", "1 and 3 only", "2 and 3 only", "All of the above"], correct: 0, exp: "Mobile Cloud Computing (MCC) cannot 'completely remove' wireless communication delays. Physics and network routing always introduce some latency." },
+            { q: "Which type of data is primarily handled in Spatial Cloud Computing systems?", options: ["Text", "Financial transactions", "Geographic Information System (GIS) raster and vector data", "Audio"], correct: 2, exp: "Spatial Cloud Computing is explicitly designed to handle the massive processing and storage requirements of geographic and map data (GIS)." },
+            { q: "Which technology is considered a critical enabler for ultra-reliable low-latency communication (URLLC) in 5G networks?", options: ["IPv4", "Edge/Fog Computing", "Magnetic tape storage", "Dial-up modems"], correct: 1, exp: "5G provides the fast pipe, but to actually achieve ultra-low latency, the computation must happen near the user via Edge/Fog computing." },
+            { q: "What is the primary objective of Cyber-Physical Systems (CPS)?", options: ["To replace human workers", "To seamlessly integrate physical processes with computational algorithms and networking", "To create virtual reality games", "To increase hardware costs"], correct: 1, exp: "CPS is the tight integration of the physical world (sensors, motors) with the cyber world (software algorithms, networks), like a smart grid or autonomous car." },
+            { q: "In an IoHT (Internet of Health Things) architecture, where is the most appropriate place for a fast, life-saving 'Event Handler' (like an ECG alert)?", options: ["Deep in the centralized cloud", "At the Area Gateway (Fog/Edge level)", "On a printed report", "In long-term cold storage"], correct: 1, exp: "Life-critical alerts cannot wait for cloud round-trips. They must be handled immediately at the local gateway." },
+            { q: "According to the IoHT workflow, where does 'Confirmatory' analysis (long-term trending and deep analytics) occur?", options: ["On the body sensor", "At the local gateway", "In the centralized Cloud", "On the patient's smartphone"], correct: 2, exp: "While local gateways handle immediate alerts, the massive compute power of the Cloud is used to analyze months of data to find long-term trends." },
+            { q: "In V2V (Vehicle-to-Vehicle) communication, the primary objective is:", options: ["Internet access", "Exchanging safety-critical information such as speed, position, and braking", "Infotainment", "Uploading to cloud"], correct: 1, exp: "V2V is a fundamental safety technology allowing cars to talk directly to each other to prevent collisions and coordinate braking." },
+            { q: "Which technology is most commonly associated with low-latency V2X (Vehicle-to-Everything) safety messaging?", options: ["Bluetooth", "Home Wi-Fi", "DSRC / IEEE 802.11p", "NFC"], correct: 2, exp: "Dedicated Short-Range Communications (DSRC) is a specialized Wi-Fi protocol (802.11p) specifically engineered for the fast-moving, harsh environment of vehicular communication." },
+            { q: "A major benefit of real-time mobility analytics in urban transport systems is:", options: ["Eliminating traffic laws", "Dynamic traffic signal optimization based on live vehicle density", "Reducing manufacturing costs", "Preventing all accidents"], correct: 1, exp: "By analyzing live traffic data from thousands of cars and sensors, the cloud can dynamically adjust traffic light timings to smooth flow and reduce congestion." },
+            { q: "Which of the following is a key advantage of 5G eMBB (Enhanced Mobile Broadband) over 4G LTE?", options: ["Lower latency for critical control", "Extremely high data rates and capacity for bandwidth-heavy apps like AR/VR", "Support for massive IoT", "Lower frequency usage"], correct: 1, exp: "eMBB focuses purely on massive speed and bandwidth. URLLC handles the low latency, and mMTC handles massive IoT connections." },
+            // Mix & Syllabus (Mock Exams)
+            { q: "What does the ACM definition of Computing encompass?", options: ["Only designing hardware", "Any goal-oriented activity requiring computers (designing, processing, intelligent systems)", "Only processing information", "Only scientific research"], correct: 1, exp: "The ACM defines computing broadly to cover the entire spectrum of designing, building, and using computers to solve problems." },
+            { q: "In a PHIL (Power Hardware in Loop) experiment for fault analysis, why are asymmetrical faults considered more detrimental than symmetrical faults?", options: ["Harder to detect", "They introduce negative sequence components causing severe complex disturbances in rotating machines", "Mitigated by grid", "Cause immediate disconnect"], correct: 1, exp: "Asymmetrical faults (like a single line to ground) unbalance the power grid, creating negative sequence currents that severely overheat and stress the rotors in generators." },
+            { q: "According to the cloud energy breakdown, what critical insight is revealed regarding data center power usage?", options: ["Most power is used by networking", "The majority of power is *not* used for computation itself", "Distribution consumes least", "Servers consume 100% idle"], correct: 1, exp: "Massive amounts of energy in a data center are wasted on cooling systems (HVAC) and power conversion losses, rather than actually powering the CPU chips." },
+            { q: "Which XML-based language acts as the 'user manual' for a web service, describing its capabilities and how to interact with it?", options: ["SOAP", "XML", "WSDL", "UDDI"], correct: 2, exp: "The Web Services Description Language (WSDL) provides the exact technical specifications (inputs, outputs, methods) needed to call a specific web service." },
+            { q: "Which scaling method is described as adding more machines (nodes) to a resource pool?", options: ["Vertical Scaling", "Diagonal Scaling", "Horizontal Scaling", "Radial Scaling"], correct: 2, exp: "Horizontal scaling (Scale-Out) adds more servers. Vertical scaling (Scale-Up) adds more CPU/RAM to an existing server." },
+            { q: "What is the primary purpose of XML (Extensible Markup Language) in cloud computing?", options: ["Visual display", "Structure and transport data for machine-to-machine communication", "Execute logic", "Manage network"], correct: 1, exp: "Unlike HTML which formats data for humans to read, XML is a strict syntax used to structure data so that two entirely different computer systems can easily parse and understand it." },
+            { q: "In Docker terminology, what is an 'Image'?", options: ["Running instance", "A blueprint or template for a container", "Virtual machine", "Network config"], correct: 1, exp: "An image is the static, read-only template (the recipe). When you 'run' an image, it becomes an active, executing container." },
+            { q: "What is the core technology that differentiates cloud computing from the traditional client-server model?", options: ["Dedicated Servers", "Virtualization", "Fixed IP Addressing", "Local Storage"], correct: 1, exp: "Virtualization allows physical servers to be sliced into many independent virtual servers, enabling the multi-tenancy and dynamic resource pooling that defines the cloud." },
+            { q: "A cloud service guarantees 99.95% availability. Over a 30-day month (24h/day), the service crashes for exactly 1 hour. Was the SLA violated?", options: ["Yes, SLA was violated.", "No, the service stayed within allowed downtime.", "Cannot be calculated.", "Yes, but no penalty applies."], correct: 0, exp: "30 days * 24h = 720 hours. Allowed downtime is 0.05% of 720 hours = 0.36 hours (about 21.6 minutes). A 1-hour crash easily violates the SLA." },
+            { q: "Which 5G service category is specifically designed to support a massive number of low-power, low-data-rate devices like smart city sensors?", options: ["eMBB", "URLLC", "mMTC", "DSRC"], correct: 2, exp: "mMTC (Massive Machine Type Communications) is engineered to connect millions of tiny IoT devices per square kilometer without overwhelming the network." }
+        ];
+
+        // Shuffle function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let questions = [];
+        let currentIndex = 0;
+        let answers = [];
+        let submitted = false;
+
+        const appDiv = document.getElementById('app');
+
+        function initApp() {
+            // Deep copy and shuffle
+            questions = shuffleArray(JSON.parse(JSON.stringify(rawQuestions)));
+            answers = new Array(questions.length).fill(null);
+            renderStart();
+        }
+
+        function renderStart() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-8 text-center fade-in bg-gradient-to-b from-blue-50 to-white">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl mb-6 shadow-lg">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold text-slate-900 mb-4">Cloud Computing Mastery</h1>
+                    <p class="text-lg text-slate-600 mb-2">Set 3: Migration, Serverless & Advanced Edge Ecosystems</p>
+                    <p class="text-sm text-slate-500 mb-8 max-w-md">This final set contains 50 randomized questions covering Weeks 9-12 and highly probable Mock Exam questions. Focus on Migration techniques, FaaS, and the Cloud/Fog/Edge/Dew continuum.</p>
+                    
+                    <button onclick="startTest()" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200">
+                        Start Assessment <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function startTest() {
+            currentIndex = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (submitted) {
+                renderResults();
+                return;
+            }
+
+            const q = questions[currentIndex];
+            const progress = ((currentIndex) / questions.length) * 100;
+
+            let html = `
+                <!-- Progress Header -->
+                <div class="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Question ${currentIndex + 1} of ${questions.length}</span>
+                    <button onclick="submitTestEarly()" class="text-sm text-red-500 hover:text-red-700 font-medium">End Test Early</button>
+                </div>
+                <div class="w-full bg-slate-200 h-1">
+                    <div class="bg-blue-600 h-1 transition-all duration-300" style="width: ${progress}%"></div>
+                </div>
+                
+                <!-- Question Body -->
+                <div class="p-6 md:p-8 flex-1 flex flex-col fade-in overflow-y-auto">
+                    <h2 class="text-xl md:text-2xl font-semibold text-slate-800 mb-8 leading-snug">${q.q}</h2>
+                    
+                    <div class="space-y-3 flex-1">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="selectOption(${i})" class="option-btn w-full text-left p-4 rounded-xl border-2 ${answers[currentIndex] === i ? 'selected' : 'border-slate-200 hover:border-slate-300'} focus:outline-none relative">
+                                <div class="flex items-start">
+                                    <div class="w-6 h-6 rounded-full border-2 mr-4 flex-shrink-0 flex items-center justify-center ${answers[currentIndex] === i ? 'border-blue-600' : 'border-slate-300'}">
+                                        ${answers[currentIndex] === i ? '<div class="w-3 h-3 bg-blue-600 rounded-full"></div>' : ''}
+                                    </div>
+                                    <span class="text-slate-700 leading-tight">${opt}</span>
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Footer Nav -->
+                <div class="bg-white p-4 md:p-6 border-t border-slate-100 flex justify-between items-center">
+                    <button onclick="prev()" class="px-6 py-2.5 rounded-lg font-medium text-slate-500 hover:bg-slate-100 focus:outline-none transition-colors ${currentIndex === 0 ? 'invisible' : ''}">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    
+                    ${currentIndex === questions.length - 1 ? `
+                        <button onclick="submitTest()" class="px-8 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-sm transition-colors focus:outline-none focus:ring-4 focus:ring-green-100">
+                            Submit Test <i class="fas fa-check ml-2"></i>
+                        </button>
+                    ` : `
+                        <button onclick="next()" class="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition-colors focus:outline-none focus:ring-4 focus:ring-blue-100">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    `}
+                </div>
+            `;
+            appDiv.innerHTML = html;
+        }
+
+        function selectOption(index) {
+            answers[currentIndex] = index;
+            renderQuestion(); 
+        }
+
+        function next() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function submitTestEarly() {
+            if(confirm("Are you sure you want to end the test early? Unanswered questions will be marked incorrect.")) {
+                submitFinal();
+            }
+        }
+
+        function submitTest() {
+            const unanswered = answers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if(!confirm(`You have ${unanswered} unanswered questions. Submit anyway?`)) return;
+            }
+            submitFinal();
+        }
+
+        function submitFinal() {
+            appDiv.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-12 text-center fade-in">
+                    <i class="fas fa-circle-notch fa-spin text-5xl text-blue-500 mb-6"></i>
+                    <h2 class="text-2xl font-bold text-slate-800">Analyzing Results...</h2>
+                </div>
+            `;
+            setTimeout(() => {
+                submitted = true;
+                renderResults();
+            }, 800);
+        }
+
+        function renderResults() {
+            let score = 0;
+            let resultsHtml = '';
+
+            questions.forEach((q, i) => {
+                const ans = answers[i];
+                const isCorrect = ans === q.correct;
+                const isUnanswered = ans === null;
+                
+                if (isCorrect) score++;
+
+                resultsHtml += `
+                    <div class="mb-6 p-5 rounded-xl border ${isCorrect ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50'}">
+                        <div class="flex items-start mb-3">
+                            <div class="mt-0.5 mr-3 flex-shrink-0">
+                                ${isCorrect 
+                                    ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' 
+                                    : '<i class="fas fa-times-circle text-red-500 text-xl"></i>'}
+                            </div>
+                            <h3 class="font-semibold text-slate-800">Q${i+1}: ${q.q}</h3>
+                        </div>
+                        
+                        <div class="ml-8 space-y-2 text-sm">
+                            ${!isCorrect ? `
+                                <div class="text-red-700 mb-2">
+                                    <span class="font-semibold">Your Answer:</span> ${isUnanswered ? '<em>Skipped</em>' : q.options[ans]}
+                                </div>
+                            ` : ''}
+                            <div class="text-green-700 font-medium">
+                                <span class="font-bold">Correct Answer:</span> ${q.options[q.correct]}
+                            </div>
+                            <div class="text-slate-600 mt-2 pt-2 border-t border-slate-200/50">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-1"></i> <strong>Concept:</strong> ${q.exp}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const percentage = Math.round((score / questions.length) * 100);
+            let message = '';
+            let colorClass = '';
+            
+            if (percentage >= 90) { message = "Exceptional! You've mastered this set."; colorClass = "text-green-600"; }
+            else if (percentage >= 70) { message = "Solid work. Review the missed concepts to close the gap."; colorClass = "text-blue-600"; }
+            else { message = "Keep studying. Focus heavily on the explanations below."; colorClass = "text-yellow-600"; }
+
+            appDiv.innerHTML = `
+                <div class="bg-slate-50 border-b border-slate-200 p-6 text-center">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Assessment Complete</h2>
+                    <div class="text-5xl font-black ${colorClass} mb-3">${percentage}%</div>
+                    <p class="text-lg text-slate-600">${score} out of ${questions.length} correct</p>
+                    <p class="text-sm font-medium ${colorClass} mt-2">${message}</p>
+                </div>
+                
+                <div class="p-6 md:p-8 flex-1 overflow-y-auto fade-in bg-white">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b pb-2">Detailed Review</h3>
+                    ${resultsHtml}
+                </div>
+                
+                <div class="bg-slate-50 p-6 border-t border-slate-200 text-center">
+                    <button onclick="location.reload()" class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-medium shadow-md transition-colors focus:outline-none">
+                        Retake Set 3 <i class="fas fa-redo ml-2"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // Boot
+        initApp();
+    </script>
+</body>
+</html>
